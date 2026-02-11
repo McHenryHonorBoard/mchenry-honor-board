@@ -52,9 +52,8 @@
     width: 25%;
     position: relative;
     overflow: hidden;
-    border-left: 1px solid #333;
-    border-right: 1px solid #333;
     padding: 0 10px;
+    box-sizing: border-box;
   }
 
   .category-title {
@@ -129,13 +128,10 @@
     </div>
   </div>
 
-  <!-- COLUMN 4: 1100 SERIES -->
+  <!-- COLUMN 4: 1100 SERIES (STATIC) -->
   <div class="column">
     <div class="category-title">1100 Series</div>
-    <div class="scroll-box" id="scroll-1100">
-      <div class="inner" id="cat-1100"></div>
-      <div class="inner-dup" id="cat-1100-dup"></div>
-    </div>
+    <div id="cat-1100-static"></div>
   </div>
 
 </div>
@@ -177,6 +173,15 @@
      RENDER FUNCTIONS
      ============================ */
 
+  function addBlankLines(container, count = 6) {
+    for (let i = 0; i < count; i++) {
+      const div = document.createElement("div");
+      div.className = "entry";
+      div.innerHTML = "&nbsp;";
+      container.appendChild(div);
+    }
+  }
+
   function render300Games(entries, container) {
     const counts = new Map();
     entries.forEach(e => {
@@ -192,27 +197,61 @@
     sorted.forEach(([name, count]) => {
       const div = document.createElement("div");
       div.className = "entry";
-      div.innerHTML = `<span class="count">${count}×</span> — ${name}`;
+      div.innerHTML = `${count}× — ${name}`;
       container.appendChild(div);
     });
+
+    addBlankLines(container);
   }
 
-  function renderScoreList(entries, container) {
+  function render11InARow(entries, container) {
+    const counts = new Map();
+    entries.forEach(e => {
+      const name = `${e.first} ${e.last}`.trim();
+      if (!name) return;
+      counts.set(name, (counts.get(name) || 0) + 1);
+    });
+
+    const sorted = Array.from(counts.entries())
+      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+
+    container.innerHTML = "";
+    sorted.forEach(([name, count]) => {
+      const div = document.createElement("div");
+      div.className = "entry";
+      div.innerHTML = `${count}× — ${name}`;
+      container.appendChild(div);
+    });
+
+    addBlankLines(container);
+  }
+
+  function render800(entries, container) {
     const sorted = entries
-      .filter(e => e.first || e.last)
-      .sort((a, b) => {
-        const nameA = `${a.last} ${a.first}`.trim().toLowerCase();
-        const nameB = `${b.last} ${b.first}`.trim().toLowerCase();
-        return nameA.localeCompare(nameB);
-      });
+      .filter(e => e.score)
+      .sort((a, b) => Number(b.score) - Number(a.score));
 
     container.innerHTML = "";
     sorted.forEach(e => {
-      const name = `${e.first} ${e.last}`.trim();
-      const text = e.score ? `${name} — ${e.score}` : name;
       const div = document.createElement("div");
       div.className = "entry";
-      div.textContent = text;
+      div.textContent = `${e.first} ${e.last} — ${e.score}`;
+      container.appendChild(div);
+    });
+
+    addBlankLines(container);
+  }
+
+  function render1100(entries, container) {
+    const sorted = entries
+      .filter(e => e.score)
+      .sort((a, b) => Number(b.score) - Number(a.score));
+
+    container.innerHTML = "";
+    sorted.forEach(e => {
+      const div = document.createElement("div");
+      div.className = "entry";
+      div.textContent = `${e.first} ${e.last} — ${e.score}`;
       container.appendChild(div);
     });
   }
@@ -225,12 +264,11 @@
     const c300  = document.getElementById("cat-300");
     const c11   = document.getElementById("cat-11");
     const c800  = document.getElementById("cat-800");
-    const c1100 = document.getElementById("cat-1100");
+    const c1100 = document.getElementById("cat-1100-static");
 
     const dup300  = document.getElementById("cat-300-dup");
     const dup11   = document.getElementById("cat-11-dup");
     const dup800  = document.getElementById("cat-800-dup");
-    const dup1100 = document.getElementById("cat-1100-dup");
 
     try {
       const [data300, data11, data800, data1100] = await Promise.all([
@@ -241,14 +279,13 @@
       ]);
 
       render300Games(data300, c300);
-      renderScoreList(data11, c11);
-      renderScoreList(data800, c800);
-      renderScoreList(data1100, c1100);
+      render11InARow(data11, c11);
+      render800(data800, c800);
+      render1100(data1100, c1100);
 
-      dup300.innerHTML  = c300.innerHTML;
-      dup11.innerHTML   = c11.innerHTML;
-      dup800.innerHTML  = c800.innerHTML;
-      dup1100.innerHTML = c1100.innerHTML;
+      dup300.innerHTML = c300.innerHTML;
+      dup11.innerHTML  = c11.innerHTML;
+      dup800.innerHTML = c800.innerHTML;
 
     } catch (e) {
       console.error("Error loading honor board data:", e);
@@ -266,7 +303,6 @@
       startScroll("scroll-300");
       startScroll("scroll-11");
       startScroll("scroll-800");
-      startScroll("scroll-1100");
     }, 3000);
 
   });
