@@ -310,7 +310,7 @@
     const dup11   = document.getElementById("cat-11-dup");
     const dup800  = document.getElementById("cat-800-dup");
 
-    try {
+    async function initialize() {
       const [rows300, rows11, rows800, rows1100] = await Promise.all([
         fetchCsv(URL_300),
         fetchCsv(URL_11),
@@ -327,24 +327,19 @@
       dup11.innerHTML  = c11.innerHTML;
       dup800.innerHTML = c800.innerHTML;
 
-    } catch (e) {
-      console.error("Error loading honor board data:", e);
+      startScroll("scroll-300");
+      startScroll("scroll-11");
+      startScroll("scroll-800");
     }
 
     function startScroll(id) {
       const box = document.getElementById(id);
       const height = box.offsetHeight;
       const duration = height / 20;
-
       box.style.animation = `scroll-up ${duration}s linear infinite`;
     }
 
-    setTimeout(() => {
-      startScroll("scroll-300");
-      startScroll("scroll-11");
-      startScroll("scroll-800");
-    }, 3000);
-
+    initialize();
   });
 </script>
 
