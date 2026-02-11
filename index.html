@@ -56,6 +56,7 @@
     box-sizing: border-box;
   }
 
+  /* UPDATED HEADER STYLE */
   .category-title {
     font-size: 36px;
     font-weight: bold;
@@ -64,9 +65,12 @@
     text-transform: uppercase;
     position: sticky;
     top: 0;
-    background: black;
-    padding: 10px 0;
+    background: #b30000; /* deep red */
+    padding: 14px 0;
     z-index: 5;
+    border-radius: 6px;
+    color: white;
+    box-shadow: 0 0 12px rgba(0,0,0,0.6);
   }
 
   .scroll-box {
@@ -81,8 +85,9 @@
     text-align: center;
   }
 
+  /* UPDATED SCROLL START POSITION */
   @keyframes scroll-up {
-    from { transform: translateY(0); }
+    from { transform: translateY(50%); }
     to   { transform: translateY(-50%); }
   }
 </style>
