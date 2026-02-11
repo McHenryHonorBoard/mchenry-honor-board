@@ -13,11 +13,12 @@
     overflow: hidden;
   }
 
-  /* McHenry logo centered with white background */
+  /* HEADER */
   .header-logos {
     text-align: center;
     padding: 20px 0;
     position: relative;
+    z-index: 10;
   }
 
   .mchenry-logo {
@@ -25,21 +26,25 @@
     background: white;
     padding: 12px 24px;
     border-radius: 10px;
+    display: inline-block;
   }
 
-  /* Boom logo watermark in bottom-right */
+  /* BOOM LOGO WATERMARK */
   .boom-watermark {
-    position: absolute;
-    top: 20px;
+    position: fixed;
+    bottom: 20px;
     right: 20px;
     height: 70px;
     opacity: 0.35;
+    z-index: 20;
   }
 
+  /* SCROLL AREA */
   .scroll-wrapper {
     position: relative;
     height: calc(100vh - 200px);
     overflow: hidden;
+    z-index: 1;
   }
 
   #scrollContent {
@@ -82,11 +87,15 @@
 
 <body>
 
+<!-- BOOM LOGO WATERMARK -->
+<img class="boom-watermark" src="boom-logo.png">
+
+<!-- HEADER -->
 <div class="header-logos">
   <img class="mchenry-logo" src="mchenry-logo.png">
-  <img class="boom-watermark" src="boom-logo.png">
 </div>
 
+<!-- SCROLLING CONTENT -->
 <div class="scroll-wrapper">
   <div id="scrollContent">
 
@@ -254,5 +263,4 @@
 
 </body>
 </html>
-
 
