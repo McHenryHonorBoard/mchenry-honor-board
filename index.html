@@ -170,7 +170,7 @@
   }
 
   /* ============================
-     RENDER FUNCTIONS
+     RENDER HELPERS
      ============================ */
 
   function addBlankLines(container, count = 6) {
@@ -182,8 +182,12 @@
     }
   }
 
+  /* ============================
+     RENDER 300 GAMES
+     ============================ */
   function render300Games(entries, container) {
     const counts = new Map();
+
     entries.forEach(e => {
       const name = `${e.first} ${e.last}`.trim();
       if (!name) return;
@@ -191,41 +195,41 @@
     });
 
     const sorted = Array.from(counts.entries())
-      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+      .sort((a, b) => b[1] - a[1]); // highest count only
 
     container.innerHTML = "";
     sorted.forEach(([name, count]) => {
       const div = document.createElement("div");
       div.className = "entry";
-      div.innerHTML = `${count}× — ${name}`;
+      div.innerHTML = count > 1 ? `${name} (${count})` : name;
       container.appendChild(div);
     });
 
     addBlankLines(container);
   }
 
+  /* ============================
+     RENDER 11 IN A ROW
+     ============================ */
   function render11InARow(entries, container) {
-    const counts = new Map();
-    entries.forEach(e => {
-      const name = `${e.first} ${e.last}`.trim();
-      if (!name) return;
-      counts.set(name, (counts.get(name) || 0) + 1);
-    });
-
-    const sorted = Array.from(counts.entries())
-      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+    const sorted = entries
+      .filter(e => e.score)
+      .sort((a, b) => Number(b.score) - Number(a.score));
 
     container.innerHTML = "";
-    sorted.forEach(([name, count]) => {
+    sorted.forEach(e => {
       const div = document.createElement("div");
       div.className = "entry";
-      div.innerHTML = `${count}× — ${name}`;
+      div.textContent = `${e.first} ${e.last} (${e.score})`;
       container.appendChild(div);
     });
 
     addBlankLines(container);
   }
 
+  /* ============================
+     RENDER 800 SERIES
+     ============================ */
   function render800(entries, container) {
     const sorted = entries
       .filter(e => e.score)
@@ -242,6 +246,9 @@
     addBlankLines(container);
   }
 
+  /* ============================
+     RENDER 1100 SERIES (STATIC)
+     ============================ */
   function render1100(entries, container) {
     const sorted = entries
       .filter(e => e.score)
