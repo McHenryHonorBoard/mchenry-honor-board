@@ -99,6 +99,9 @@
     flex-direction: column;
     justify-content: center;
     height: 100%;
+
+    /* NEW: Move list closer to header */
+    margin-top: -80px; /* adjust this value to fine‑tune */
   }
 </style>
 </head>
@@ -296,13 +299,8 @@
 
     container.innerHTML = "";
 
-    /* SHIFT LIST UP BY FIVE LINES */
-    for (let i = 0; i < 5; i++) {
-      const spacer = document.createElement("div");
-      spacer.className = "entry";
-      spacer.innerHTML = "&nbsp;";
-      container.appendChild(spacer);
-    }
+    /* NEW: Move list closer to header */
+    container.style.marginTop = "-80px";
 
     processed.forEach(e => {
       const div = document.createElement("div");
