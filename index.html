@@ -39,23 +39,26 @@
     z-index: 20;
   }
 
-  /* TWO COLUMN LAYOUT */
+  /* FOUR COLUMN LAYOUT */
   .content-area {
     display: flex;
     height: calc(100vh - 200px);
-    padding: 0 40px;
+    padding: 0 20px;
     box-sizing: border-box;
-    gap: 40px;
+    gap: 20px;
   }
 
   .column {
-    width: 50%;
+    width: 25%;
     position: relative;
     overflow: hidden;
+    border-left: 1px solid #333;
+    border-right: 1px solid #333;
+    padding: 0 10px;
   }
 
   .category-title {
-    font-size: 42px;
+    font-size: 36px;
     font-weight: bold;
     text-align: center;
     margin-bottom: 10px;
@@ -74,7 +77,7 @@
   }
 
   .entry {
-    font-size: 32px;
+    font-size: 28px;
     padding: 6px 0;
     text-align: center;
   }
@@ -96,36 +99,42 @@
   <img class="mchenry-logo" src="mchenry-logo.png">
 </div>
 
-<!-- TWO COLUMN SCROLLING AREA -->
+<!-- FOUR COLUMN SCROLLING AREA -->
 <div class="content-area">
 
-  <!-- LEFT COLUMN -->
+  <!-- COLUMN 1: 300 GAMES -->
   <div class="column">
     <div class="category-title">300 Games</div>
     <div class="scroll-box" id="scroll-300">
       <div class="inner" id="cat-300"></div>
       <div class="inner-dup" id="cat-300-dup"></div>
     </div>
+  </div>
 
-    <div class="category-title">1100 Series</div>
-    <div class="scroll-box" id="scroll-1100">
-      <div class="inner" id="cat-1100"></div>
-      <div class="inner-dup" id="cat-1100-dup"></div>
+  <!-- COLUMN 2: 11 IN A ROW -->
+  <div class="column">
+    <div class="category-title">11 in a Row</div>
+    <div class="scroll-box" id="scroll-11">
+      <div class="inner" id="cat-11"></div>
+      <div class="inner-dup" id="cat-11-dup"></div>
     </div>
   </div>
 
-  <!-- RIGHT COLUMN -->
+  <!-- COLUMN 3: 800 SERIES -->
   <div class="column">
     <div class="category-title">800 Series</div>
     <div class="scroll-box" id="scroll-800">
       <div class="inner" id="cat-800"></div>
       <div class="inner-dup" id="cat-800-dup"></div>
     </div>
+  </div>
 
-    <div class="category-title">11 in a Row</div>
-    <div class="scroll-box" id="scroll-11">
-      <div class="inner" id="cat-11"></div>
-      <div class="inner-dup" id="cat-11-dup"></div>
+  <!-- COLUMN 4: 1100 SERIES -->
+  <div class="column">
+    <div class="category-title">1100 Series</div>
+    <div class="scroll-box" id="scroll-1100">
+      <div class="inner" id="cat-1100"></div>
+      <div class="inner-dup" id="cat-1100-dup"></div>
     </div>
   </div>
 
@@ -265,4 +274,3 @@
 
 </body>
 </html>
-
