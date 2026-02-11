@@ -13,20 +13,32 @@
     overflow: hidden;
   }
 
+  /* McHenry logo centered with white background */
   .header-logos {
-    display: flex;
-    justify-content: center;
-    gap: 60px;
+    text-align: center;
     padding: 20px 0;
+    position: relative;
   }
 
-  .header-logos img {
-    height: 120px;
+  .mchenry-logo {
+    height: 150px;
+    background: white;
+    padding: 12px 24px;
+    border-radius: 10px;
+  }
+
+  /* Boom logo watermark in top-right */
+  .boom-watermark {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    height: 70px;
+    opacity: 0.35;
   }
 
   .scroll-wrapper {
     position: relative;
-    height: calc(100vh - 180px);
+    height: calc(100vh - 200px);
     overflow: hidden;
   }
 
@@ -38,7 +50,7 @@
   .pair {
     display: flex;
     width: 100%;
-    padding: 20px 0;
+    padding: 25px 0;
   }
 
   .column {
@@ -71,8 +83,8 @@
 <body>
 
 <div class="header-logos">
-  <img src="mchenry-logo.png">
-  <img src="boom-logo.png">
+  <img class="mchenry-logo" src="mchenry-logo.png">
+  <img class="boom-watermark" src="boom-logo.png">
 </div>
 
 <div class="scroll-wrapper">
@@ -217,7 +229,6 @@
       console.error("Error loading honor board data:", e);
     }
 
-    // SCROLL LOGIC — now delayed 3 seconds
     const content = document.getElementById('scrollContent');
     const wrapper = document.querySelector('.scroll-wrapper');
     const stack = document.getElementById('stack');
