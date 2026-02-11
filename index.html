@@ -1,309 +1,132 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>McHenry Bowl Honor Board</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+<script>
+  /* ============================
+     1. GOOGLE SHEETS CSV URLS
+     ============================ */
+  const URL_300  = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTo4pC3erQX6RWtulE08AgfjpGAeCgG4QCB1JvM005F21JrpD1IIdpE1axoNQN19pJDqGICriWnvcUA/pub?gid=0&single=true&output=csv";
+  const URL_11   = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTo4pC3erQX6RWtulE08AgfjpGAeCgG4QCB1JvM005F21JrpD1IIdpE1axoNQN19pJDqGICriWnvcUA/pub?gid=1645007257&single=true&output=csv";
+  const URL_800  = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTo4pC3erQX6RWtulE08AgfjpGAeCgG4QCB1JvM005F21JrpD1IIdpE1axoNQN19pJDqGICriWnvcUA/pub?gid=288383571&single=true&output=csv";
+  const URL_1100 = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTo4pC3erQX6RWtulE08AgfjpGAeCgG4QCB1JvM005F21JrpD1IIdpE1axoNQN19pJDqGICriWnvcUA/pub?gid=1815197466&single=true&output=csv";
 
-    body {
-      background: #000;
-      color: #fff;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      overflow: hidden;
-    }
+  /* ============================
+     2. CSV FETCH + PARSE
+     ============================ */
+  async function fetchCsv(url) {
+    const res = await fetch(url);
+    const text = await res.text();
+    const lines = text.trim().split(/\r?\n/);
+    const rows = lines.map(line => line.split(","));
+    const header = rows[0];
+    const dataRows = rows.slice(1);
 
-    .screen {
-      width: 100vw;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+    const colFirst = header.indexOf("FirstName");
+    const colLast  = header.indexOf("LastName");
+    const colScore = header.indexOf("Score");
 
-    /* HEADER */
-    .header {
-      text-align: center;
-      padding-top: 2vh;
-      padding-bottom: 1vh;
-    }
+    return dataRows
+      .filter(r => r[colFirst] || r[colLast])
+      .map(r => ({
+        first: (r[colFirst] || "").trim(),
+        last:  (r[colLast]  || "").trim(),
+        score: (r[colScore] || "").trim()
+      }));
+  }
 
-    .header-logo {
-      height: 14vh;
-      object-fit: contain;
-      background: white;
-      padding: 1vh 2vh;
-      border-radius: 0.5vh;
-    }
+  /* ============================
+     3. RENDER FUNCTIONS
+     ============================ */
 
-    .header-title {
-      margin-top: 1vh;
-      font-size: 3.2vh;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-    }
-
-    .header-divider {
-      margin: 1.5vh auto 0;
-      width: 60vw;
-      height: 0.4vh;
-      background: #c8102e;
-    }
-
-    /* FOOTER */
-    .footer {
-      position: absolute;
-      bottom: 1.5vh;
-      right: 2vw;
-    }
-
-    .footer-logo {
-      height: 6vh;
-      opacity: 0.8;
-    }
-
-    /* SCROLL AREA */
-    .scroll-wrapper {
-      position: relative;
-      margin-top: 2vh;
-      width: 90vw;
-      height: 75vh;
-      overflow: hidden;
-    }
-
-    .scroll-content {
-      position: absolute;
-      width: 100%;
-      animation: scroll-up linear infinite;
-    }
-
-    @keyframes scroll-up {
-      0% { transform: translateY(0%); }
-      100% { transform: translateY(-50%); }
-    }
-
-    /* CATEGORY BLOCKS */
-    .category {
-      width: 100%;
-      text-align: center;
-      margin-bottom: 6vh;
-    }
-
-    .category-title {
-      font-size: 3.2vh;
-      color: #c8102e;
-      text-transform: uppercase;
-      letter-spacing: 0.15em;
-      margin-bottom: 0.8vh;
-      text-shadow: 0 0 8px rgba(200, 16, 46, 0.7);
-    }
-
-    .category-underline {
-      width: 20vw;
-      height: 0.3vh;
-      background: #d0d0d0;
-      margin: 0 auto 2vh;
-    }
-
-    .entry {
-      font-size: 2.6vh;
-      margin: 0.8vh 0;
-    }
-
-    .count {
-      color: #c8102e;
-      font-weight: bold;
-    }
-  </style>
-</head>
-<body>
-  <div class="screen">
-
-    <!-- HEADER -->
-    <header class="header">
-      <img src="mchenry-logo.png" alt="McHenry Bowl Logo" class="header-logo" />
-      <div class="header-title">HONOR BOARD</div>
-      <div class="header-divider"></div>
-    </header>
-
-    <!-- SCROLLING AREA -->
-    <div class="scroll-wrapper">
-      <div class="scroll-content" id="scrollContent">
-
-        <!-- FULL STACK (1st copy) -->
-        <div id="stack">
-
-          <!-- 300 GAMES -->
-          <div class="category" id="cat-300">
-            <div class="category-title">300 GAMES</div>
-            <div class="category-underline"></div>
-            <div class="category-entries"></div>
-          </div>
-
-          <!-- 11 IN A ROW -->
-          <div class="category" id="cat-11">
-            <div class="category-title">11 IN A ROW</div>
-            <div class="category-underline"></div>
-            <div class="category-entries"></div>
-          </div>
-
-          <!-- 800 SERIES -->
-          <div class="category" id="cat-800">
-            <div class="category-title">800 SERIES</div>
-            <div class="category-underline"></div>
-            <div class="category-entries"></div>
-          </div>
-
-          <!-- 1100 SERIES -->
-          <div class="category" id="cat-1100">
-            <div class="category-title">1100 SERIES</div>
-            <div class="category-underline"></div>
-            <div class="category-entries"></div>
-          </div>
-
-        </div>
-
-        <!-- DUPLICATE STACK FOR LOOP -->
-        <div id="stack-duplicate"></div>
-
-      </div>
-    </div>
-
-    <!-- FOOTER -->
-    <footer class="footer">
-      <img src="boom-logo.png" alt="Boom Pro Shop Logo" class="footer-logo" />
-    </footer>
-
-  </div>
-
-  <script>
-    /* ============================
-       1. GOOGLE SHEETS CSV URLS
-       ============================ */
-    const URL_300  = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTo4pC3erQX6RWtulE08AgfjpGAeCgG4QCB1JvM005F21JrpD1IIdpE1axoNQN19pJDqGICriWnvcUA/pub?gid=0&single=true&output=csv";
-    const URL_11   = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTo4pC3erQX6RWtulE08AgfjpGAeCgG4QCB1JvM005F21JrpD1IIdpE1axoNQN19pJDqGICriWnvcUA/pub?gid=1645007257&single=true&output=csv";
-    const URL_800  = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTo4pC3erQX6RWtulE08AgfjpGAeCgG4QCB1JvM005F21JrpD1IIdpE1axoNQN19pJDqGICriWnvcUA/pub?gid=288383571&single=true&output=csv";
-    const URL_1100 = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTo4pC3erQX6RWtulE08AgfjpGAeCgG4QCB1JvM005F21JrpD1IIdpE1axoNQN19pJDqGICriWnvcUA/pub?gid=1815197466&single=true&output=csv";
-
-    /* ============================
-       2. CSV FETCH + PARSE
-       ============================ */
-    async function fetchCsv(url) {
-      const res = await fetch(url);
-      const text = await res.text();
-      const lines = text.trim().split(/\r?\n/);
-      const rows = lines.map(line => line.split(","));
-      const header = rows[0];
-      const dataRows = rows.slice(1);
-
-      const colFirst = header.indexOf("FirstName");
-      const colLast  = header.indexOf("LastName");
-      const colScore = header.indexOf("Score");
-
-      return dataRows
-        .filter(r => r[colFirst] || r[colLast])
-        .map(r => ({
-          first: (r[colFirst] || "").trim(),
-          last:  (r[colLast]  || "").trim(),
-          score: (r[colScore] || "").trim()
-        }));
-    }
-
-    /* ============================
-       3. RENDER FUNCTIONS
-       ============================ */
-
-    // 300 GAMES: group by bowler, show "Nx — Name"
-    function render300Games(entries, container) {
-      const counts = new Map();
-      entries.forEach(e => {
-        const name = `${e.first} ${e.last}`.trim();
-        if (!name) return;
-        counts.set(name, (counts.get(name) || 0) + 1);
-      });
-
-      const sorted = Array.from(counts.entries())
-        .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
-
-      container.innerHTML = "";
-      sorted.forEach(([name, count]) => {
-        const div = document.createElement("div");
-        div.className = "entry";
-        div.innerHTML = `<span class="count">${count}×</span> — ${name}`;
-        container.appendChild(div);
-      });
-    }
-
-    // 11 / 800 / 1100: list each score line
-    function renderScoreList(entries, container) {
-      const sorted = entries
-        .filter(e => e.first || e.last)
-        .sort((a, b) => {
-          const nameA = `${a.last} ${a.first}`.trim().toLowerCase();
-          const nameB = `${b.last} ${b.first}`.trim().toLowerCase();
-          return nameA.localeCompare(nameB);
-        });
-
-      container.innerHTML = "";
-      sorted.forEach(e => {
-        const name = `${e.first} ${e.last}`.trim();
-        const text = e.score ? `${name} — ${e.score}` : name;
-        const div = document.createElement("div");
-        div.className = "entry";
-        div.textContent = text;
-        container.appendChild(div);
-      });
-    }
-
-    /* ============================
-       4. MAIN LOAD + SCROLL SETUP
-       ============================ */
-    window.addEventListener('load', async () => {
-
-      const cat300  = document.querySelector("#cat-300 .category-entries");
-      const cat11   = document.querySelector("#cat-11 .category-entries");
-      const cat800  = document.querySelector("#cat-800 .category-entries");
-      const cat1100 = document.querySelector("#cat-1100 .category-entries");
-
-      try {
-        const [data300, data11, data800, data1100] = await Promise.all([
-          fetchCsv(URL_300),
-          fetchCsv(URL_11),
-          fetchCsv(URL_800),
-          fetchCsv(URL_1100)
-        ]);
-
-        render300Games(data300, cat300);
-        renderScoreList(data11, cat11);
-        renderScoreList(data800, cat800);
-        renderScoreList(data1100, cat1100);
-
-      } catch (e) {
-        console.error("Error loading honor board data:", e);
-      }
-
-      // SCROLL LOGIC
-      const content = document.getElementById('scrollContent');
-      const wrapper = document.querySelector('.scroll-wrapper');
-      const stack = document.getElementById('stack');
-      const duplicate = document.getElementById('stack-duplicate');
-
-      duplicate.innerHTML = stack.innerHTML;
-
-      const contentHeight = content.offsetHeight;
-      const wrapperHeight = wrapper.offsetHeight;
-
-      const speed = 20; // pixels per second
-      const distance = contentHeight / 2 + wrapperHeight;
-      const duration = distance / speed;
-
-      content.style.animationDuration = duration + 's';
+  function render300Games(entries, container) {
+    const counts = new Map();
+    entries.forEach(e => {
+      const name = `${e.first} ${e.last}`.trim();
+      if (!name) return;
+      counts.set(name, (counts.get(name) || 0) + 1);
     });
-  </script>
 
-</body>
-</html>
+    const sorted = Array.from(counts.entries())
+      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+
+    container.innerHTML = "";
+    sorted.forEach(([name, count]) => {
+      const div = document.createElement("div");
+      div.className = "entry";
+      div.innerHTML = `<span class="count">${count}×</span> — ${name}`;
+      container.appendChild(div);
+    });
+  }
+
+  function renderScoreList(entries, container) {
+    const sorted = entries
+      .filter(e => e.first || e.last)
+      .sort((a, b) => {
+        const nameA = `${a.last} ${a.first}`.trim().toLowerCase();
+        const nameB = `${b.last} ${b.first}`.trim().toLowerCase();
+        return nameA.localeCompare(nameB);
+      });
+
+    container.innerHTML = "";
+    sorted.forEach(e => {
+      const name = `${e.first} ${e.last}`.trim();
+      const text = e.score ? `${name} — ${e.score}` : name;
+      const div = document.createElement("div");
+      div.className = "entry";
+      div.textContent = text;
+      container.appendChild(div);
+    });
+  }
+
+  /* ============================
+     4. MAIN LOAD + SCROLL SETUP
+     ============================ */
+  window.addEventListener('load', async () => {
+
+    const cat300  = document.querySelector("#cat-300 .category-entries");
+    const cat11   = document.querySelector("#cat-11 .category-entries");
+    const cat800  = document.querySelector("#cat-800 .category-entries");
+    const cat1100 = document.querySelector("#cat-1100 .category-entries");
+
+    try {
+      const [data300, data11, data800, data1100] = await Promise.all([
+        fetchCsv(URL_300),
+        fetchCsv(URL_11),
+        fetchCsv(URL_800),
+        fetchCsv(URL_1100)
+      ]);
+
+      render300Games(data300, cat300);
+      renderScoreList(data11, cat11);
+      renderScoreList(data800, cat800);
+      renderScoreList(data1100, cat1100);
+
+    } catch (e) {
+      console.error("Error loading honor board data:", e);
+    }
+
+    // SCROLL LOGIC — now delayed 3 seconds
+    const content = document.getElementById('scrollContent');
+    const wrapper = document.querySelector('.scroll-wrapper');
+    const stack = document.getElementById('stack');
+    const duplicate = document.getElementById('stack-duplicate');
+
+    // Duplicate AFTER data loads
+    duplicate.innerHTML = stack.innerHTML;
+
+    // Recalculate height AFTER rendering
+    const contentHeight = content.offsetHeight;
+    const wrapperHeight = wrapper.offsetHeight;
+
+    const speed = 20; // pixels per second
+    const distance = contentHeight / 2 + wrapperHeight;
+    const duration = distance / speed;
+
+    // Start at the top
+    content.style.transform = "translateY(0)";
+
+    // Delay scroll start by 3 seconds
+    setTimeout(() => {
+      content.style.animation = `scroll-up ${duration}s linear infinite`;
+    }, 3000);
+
+  });
+</script>
+
