@@ -17,8 +17,6 @@
   .header-logos {
     text-align: center;
     padding: 20px 0;
-    position: relative;
-    z-index: 10;
   }
 
   .mchenry-logo {
@@ -26,7 +24,6 @@
     background: white;
     padding: 12px 24px;
     border-radius: 10px;
-    display: inline-block;
   }
 
   /* BOOM LOGO WATERMARK */
@@ -36,7 +33,6 @@
     right: 20px;
     height: 70px;
     opacity: 0.35;
-    z-index: 20;
   }
 
   /* FOUR COLUMN LAYOUT */
@@ -44,40 +40,34 @@
     display: flex;
     height: calc(100vh - 200px);
     padding: 0 20px;
-    box-sizing: border-box;
     gap: 20px;
+    box-sizing: border-box;
   }
 
   .column {
     width: 25%;
     position: relative;
     overflow: hidden;
-    padding: 0 10px;
-    box-sizing: border-box;
   }
 
-  /* UPDATED HEADER STYLE */
+  /* CATEGORY HEADERS */
   .category-title {
     font-size: 36px;
     font-weight: bold;
     text-align: center;
-    margin-bottom: 10px;
-    text-transform: uppercase;
-    position: sticky;
-    top: 0;
     background: #b30000;
     padding: 14px 0;
-    z-index: 5;
     border-radius: 6px;
     color: white;
     box-shadow: 0 0 12px rgba(0,0,0,0.6);
+    position: relative;
+    z-index: 5;
   }
 
-  /* SCROLLING COLUMNS START AT MIDPOINT */
+  /* SCROLLING AREA — NOW TOP ANCHORED */
   .scroll-box {
     position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
+    top: 0; /* JS will push it down under the header */
     width: 100%;
   }
 
@@ -87,40 +77,26 @@
     text-align: center;
   }
 
-  /* SCROLL ANIMATION */
+  /* SIMPLE, FIRE-STICK-SAFE SCROLL ANIMATION */
   @keyframes scroll-up {
-    from { transform: translateY(-50%); }
-    to   { transform: translateY(-150%); }
-  }
-
-  /* CENTER STATIC 1100 LIST */
-  #cat-1100-static {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    height: 100%;
-
-    /* NEW: Move list closer to header */
-    margin-top: -80px; /* adjust this value to fine‑tune */
+    from { transform: translateY(0); }
+    to   { transform: translateY(-100%); }
   }
 </style>
 </head>
 
 <body>
 
-<!-- BOOM LOGO WATERMARK -->
 <img class="boom-watermark" src="boom-logo.png">
 
-<!-- HEADER -->
 <div class="header-logos">
   <img class="mchenry-logo" src="mchenry-logo.png">
 </div>
 
-<!-- FOUR COLUMN SCROLLING AREA -->
 <div class="content-area">
 
-  <!-- COLUMN 1: 300 GAMES -->
-  <div class="column">
+  <!-- 300 GAMES -->
+  <div class="column" id="col-300">
     <div class="category-title">300 Games</div>
     <div class="scroll-box" id="scroll-300">
       <div class="inner" id="cat-300"></div>
@@ -128,8 +104,8 @@
     </div>
   </div>
 
-  <!-- COLUMN 2: 11 IN A ROW -->
-  <div class="column">
+  <!-- 11 IN A ROW -->
+  <div class="column" id="col-11">
     <div class="category-title">11 in a Row</div>
     <div class="scroll-box" id="scroll-11">
       <div class="inner" id="cat-11"></div>
@@ -137,8 +113,8 @@
     </div>
   </div>
 
-  <!-- COLUMN 3: 800 SERIES -->
-  <div class="column">
+  <!-- 800 SERIES -->
+  <div class="column" id="col-800">
     <div class="category-title">800 Series</div>
     <div class="scroll-box" id="scroll-800">
       <div class="inner" id="cat-800"></div>
@@ -146,8 +122,8 @@
     </div>
   </div>
 
-  <!-- COLUMN 4: 1100 SERIES (STATIC) -->
-  <div class="column">
+  <!-- 1100 SERIES (STATIC) -->
+  <div class="column" id="col-1100">
     <div class="category-title">1100 Series</div>
     <div id="cat-1100-static"></div>
   </div>
@@ -155,26 +131,18 @@
 </div>
 
 <script>
-  /* ============================
-     GOOGLE SHEETS CSV URLS
-     ============================ */
+  /* GOOGLE SHEETS CSV URLS */
   const URL_300  = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTo4pC3erQX6RWtulE08AgfjpGAeCgG4QCB1JvM005F21JrpD1IIdpE1axoNQN19pJDqGICriWnvcUA/pub?gid=0&single=true&output=csv";
   const URL_11   = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTo4pC3erQX6RWtulE08AgfjpGAeCgG4QCB1JvM005F21JrpD1IIdpE1axoNQN19pJDqGICriWnvcUA/pub?gid=1645007257&single=true&output=csv";
   const URL_800  = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTo4pC3erQX6RWtulE08AgfjpGAeCgG4QCB1JvM005F21JrpD1IIdpE1axoNQN19pJDqGICriWnvcUA/pub?gid=288383571&single=true&output=csv";
   const URL_1100 = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTo4pC3erQX6RWtulE08AgfjpGAeCgG4QCB1JvM005F21JrpD1IIdpE1axoNQN19pJDqGICriWnvcUA/pub?gid=1815197466&single=true&output=csv";
 
-  /* ============================
-     CSV FETCH + PARSE
-     ============================ */
   async function fetchCsv(url) {
     const res = await fetch(url);
     const text = await res.text();
     return text.trim().split(/\r?\n/).map(line => line.split(","));
   }
 
-  /* ============================
-     RENDER HELPERS
-     ============================ */
   function addBlankLines(container, count = 6) {
     for (let i = 0; i < count; i++) {
       const div = document.createElement("div");
@@ -184,13 +152,10 @@
     }
   }
 
-  /* ============================
-     RENDER 300 GAMES
-     ============================ */
+  /* RENDER FUNCTIONS */
   function render300Games(rows, container) {
     const header = rows[0];
     const data = rows.slice(1);
-
     const colCount = header.indexOf("Count");
     const colFirst = header.indexOf("FirstName");
     const colLast  = header.indexOf("LastName");
@@ -199,15 +164,13 @@
       count: Number(r[colCount]),
       first: r[colFirst],
       last:  r[colLast]
-    }));
-
-    processed.sort((a, b) => b.count - a.count);
+    })).sort((a,b)=>b.count-a.count);
 
     container.innerHTML = "";
     processed.forEach(e => {
-      const name = `${e.first} ${e.last}`.trim();
       const div = document.createElement("div");
       div.className = "entry";
+      const name = `${e.first} ${e.last}`.trim();
       div.textContent = e.count > 1 ? `${name} (${e.count})` : name;
       container.appendChild(div);
     });
@@ -215,13 +178,9 @@
     addBlankLines(container);
   }
 
-  /* ============================
-     RENDER 11 IN A ROW
-     ============================ */
   function render11InARow(rows, container) {
     const header = rows[0];
     const data = rows.slice(1);
-
     const colFirst = header.indexOf("FirstName");
     const colLast  = header.indexOf("LastName");
     const colScore = header.indexOf("Score");
@@ -233,7 +192,7 @@
         first: r[colFirst],
         last:  r[colLast]
       }))
-      .sort((a, b) => b.score - a.score);
+      .sort((a,b)=>b.score-a.score);
 
     container.innerHTML = "";
     processed.forEach(e => {
@@ -246,13 +205,9 @@
     addBlankLines(container);
   }
 
-  /* ============================
-     RENDER 800 SERIES
-     ============================ */
   function render800(rows, container) {
     const header = rows[0];
     const data = rows.slice(1);
-
     const colFirst = header.indexOf("FirstName");
     const colLast  = header.indexOf("LastName");
     const colScore = header.indexOf("Score");
@@ -264,7 +219,7 @@
         first: r[colFirst],
         last:  r[colLast]
       }))
-      .sort((a, b) => b.score - a.score);
+      .sort((a,b)=>b.score-a.score);
 
     container.innerHTML = "";
     processed.forEach(e => {
@@ -277,13 +232,9 @@
     addBlankLines(container);
   }
 
-  /* ============================
-     RENDER 1100 SERIES (STATIC)
-     ============================ */
   function render1100(rows, container) {
     const header = rows[0];
     const data = rows.slice(1);
-
     const colFirst = header.indexOf("FirstName");
     const colLast  = header.indexOf("LastName");
     const colScore = header.indexOf("Score");
@@ -295,13 +246,9 @@
         first: r[colFirst],
         last:  r[colLast]
       }))
-      .sort((a, b) => b.score - a.score);
+      .sort((a,b)=>b.score-a.score);
 
     container.innerHTML = "";
-
-    /* NEW: Move list closer to header */
-    container.style.marginTop = "-80px";
-
     processed.forEach(e => {
       const div = document.createElement("div");
       div.className = "entry";
@@ -310,9 +257,7 @@
     });
   }
 
-  /* ============================
-     MAIN LOAD + SCROLL SETUP
-     ============================ */
+  /* MAIN LOAD + SCROLL SETUP */
   window.addEventListener('load', async () => {
 
     const c300  = document.getElementById("cat-300");
@@ -323,6 +268,10 @@
     const dup300  = document.getElementById("cat-300-dup");
     const dup11   = document.getElementById("cat-11-dup");
     const dup800  = document.getElementById("cat-800-dup");
+
+    const col300 = document.getElementById("col-300");
+    const col11  = document.getElementById("col-11");
+    const col800 = document.getElementById("col-800");
 
     async function initialize() {
       const [rows300, rows11, rows800, rows1100] = await Promise.all([
@@ -341,20 +290,27 @@
       dup11.innerHTML  = c11.innerHTML;
       dup800.innerHTML = c800.innerHTML;
 
+      positionScrollBox("scroll-300", col300);
+      positionScrollBox("scroll-11", col11);
+      positionScrollBox("scroll-800", col800);
+
       startScroll("scroll-300");
       startScroll("scroll-11");
       startScroll("scroll-800");
     }
 
+    function positionScrollBox(scrollId, column) {
+      const scrollBox = document.getElementById(scrollId);
+      const header = column.querySelector(".category-title");
+      const headerHeight = header.offsetHeight;
+      scrollBox.style.top = headerHeight + "px";
+    }
+
     function startScroll(id) {
       const box = document.getElementById(id);
-
-      /* FORCE REFLOW BEFORE ANIMATION */
       void box.offsetHeight;
-
       const height = box.offsetHeight;
       const duration = height / 20;
-
       box.style.animation = `scroll-up ${duration}s linear infinite`;
     }
 
