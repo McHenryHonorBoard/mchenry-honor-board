@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 
-<!-- ⭐ FIXED VIEWPORT FOR DIGITAL SIGNAGE (SOLVES PHONE + FIRE STICK ZOOM) -->
-<meta name="viewport" content="width=1280">
+<!-- ⭐ Responsive viewport (no forced width) -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <title>McHenry Honor Board</title>
 
@@ -15,6 +15,15 @@
     color: white;
     font-family: Arial, sans-serif;
     overflow: hidden;
+    display: flex;
+    justify-content: center;
+  }
+
+  /* ⭐ Centered fixed-width container */
+  .board-container {
+    width: 1280px;
+    max-width: 1280px;
+    margin: 0 auto;
   }
 
   /* HEADER */
@@ -72,7 +81,7 @@
   /* SCROLLING AREA — TOP ANCHORED */
   .scroll-box {
     position: absolute;
-    top: 0; /* JS pushes it under header */
+    top: 0;
     width: 100%;
   }
 
@@ -82,10 +91,10 @@
     text-align: center;
   }
 
-  /* SIMPLE, FIRE-STICK-SAFE SCROLL ANIMATION */
+  /* ⭐ Constant 60-second scroll loop */
   @keyframes scroll-up {
     from { transform: translateY(0); }
-    to   { transform: translateY(-100%); }
+    to   { transform: translateY(-50%); }
   }
 </style>
 </head>
@@ -94,49 +103,51 @@
 
 <img class="boom-watermark" src="boom-logo.png">
 
-<div class="header-logos">
-  <img class="mchenry-logo" src="mchenry-logo.png">
-</div>
+<div class="board-container">
 
-<div class="content-area">
+  <div class="header-logos">
+    <img class="mchenry-logo" src="mchenry-logo.png">
+  </div>
 
-  <!-- 300 GAMES -->
-  <div class="column" id="col-300">
-    <div class="category-title">300 Games</div>
-    <div class="scroll-box" id="scroll-300">
-      <div class="inner" id="cat-300"></div>
-      <div class="inner-dup" id="cat-300-dup"></div>
+  <div class="content-area">
+
+    <!-- 300 GAMES -->
+    <div class="column">
+      <div class="category-title">300 Games</div>
+      <div class="scroll-box" id="scroll-300">
+        <div id="cat-300"></div>
+        <div id="cat-300-dup"></div>
+      </div>
     </div>
-  </div>
 
-  <!-- 11 IN A ROW -->
-  <div class="column" id="col-11">
-    <div class="category-title">11 in a Row</div>
-    <div class="scroll-box" id="scroll-11">
-      <div class="inner" id="cat-11"></div>
-      <div class="inner-dup" id="cat-11-dup"></div>
+    <!-- 11 IN A ROW -->
+    <div class="column">
+      <div class="category-title">11 in a Row</div>
+      <div class="scroll-box" id="scroll-11">
+        <div id="cat-11"></div>
+        <div id="cat-11-dup"></div>
+      </div>
     </div>
-  </div>
 
-  <!-- 800 SERIES -->
-  <div class="column" id="col-800">
-    <div class="category-title">800 Series</div>
-    <div class="scroll-box" id="scroll-800">
-      <div class="inner" id="cat-800"></div>
-      <div class="inner-dup" id="cat-800-dup"></div>
+    <!-- 800 SERIES -->
+    <div class="column">
+      <div class="category-title">800 Series</div>
+      <div class="scroll-box" id="scroll-800">
+        <div id="cat-800"></div>
+        <div id="cat-800-dup"></div>
+      </div>
     </div>
-  </div>
 
-  <!-- 1100 SERIES (STATIC) -->
-  <div class="column" id="col-1100">
-    <div class="category-title">1100 Series</div>
-    <div id="cat-1100-static"></div>
-  </div>
+    <!-- 1100 SERIES (STATIC) -->
+    <div class="column">
+      <div class="category-title">1100 Series</div>
+      <div id="cat-1100-static" style="padding-top: 10px;"></div>
+    </div>
 
+  </div>
 </div>
 
 <script>
-  /* GOOGLE SHEETS CSV URLS */
   const URL_300  = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTo4pC3erQX6RWtulE08AgfjpGAeCgG4QCB1JvM005F21JrpD1IIdpE1axoNQN19pJDqGICriWnvcUA/pub?gid=0&single=true&output=csv";
   const URL_11   = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTo4pC3erQX6RWtulE08AgfjpGAeCgG4QCB1JvM005F21JrpD1IIdpE1axoNQN19pJDqGICriWnvcUA/pub?gid=1645007257&single=true&output=csv";
   const URL_800  = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTo4pC3erQX6RWtulE08AgfjpGAeCgG4QCB1JvM005F21JrpD1IIdpE1axoNQN19pJDqGICriWnvcUA/pub?gid=288383571&single=true&output=csv";
@@ -157,169 +168,55 @@
     }
   }
 
-  /* RENDER FUNCTIONS */
-  function render300Games(rows, container) {
+  function renderList(rows, container, formatter) {
     const header = rows[0];
     const data = rows.slice(1);
-    const colCount = header.indexOf("Count");
-    const colFirst = header.indexOf("FirstName");
-    const colLast  = header.indexOf("LastName");
-
-    const processed = data.map(r => ({
-      count: Number(r[colCount]),
-      first: r[colFirst],
-      last:  r[colLast]
-    })).sort((a,b)=>b.count-a.count);
-
     container.innerHTML = "";
-    processed.forEach(e => {
+    data.forEach(r => {
       const div = document.createElement("div");
       div.className = "entry";
-      const name = `${e.first} ${e.last}`.trim();
-      div.textContent = e.count > 1 ? `${name} (${e.count})` : name;
+      div.textContent = formatter(r, header);
       container.appendChild(div);
     });
-
     addBlankLines(container);
   }
 
-  function render11InARow(rows, container) {
-    const header = rows[0];
-    const data = rows.slice(1);
-    const colFirst = header.indexOf("FirstName");
-    const colLast  = header.indexOf("LastName");
-    const colScore = header.indexOf("Score");
-
-    const processed = data
-      .filter(r => r[colScore])
-      .map(r => ({
-        score: Number(r[colScore]),
-        first: r[colFirst],
-        last:  r[colLast]
-      }))
-      .sort((a,b)=>b.score-a.score);
-
-    container.innerHTML = "";
-    processed.forEach(e => {
-      const div = document.createElement("div");
-      div.className = "entry";
-      div.textContent = `${e.first} ${e.last} (${e.score})`;
-      container.appendChild(div);
-    });
-
-    addBlankLines(container);
+  function startScroll(id) {
+    const box = document.getElementById(id);
+    box.style.animation = "scroll-up 60s linear infinite";
   }
 
-  function render800(rows, container) {
-    const header = rows[0];
-    const data = rows.slice(1);
-    const colFirst = header.indexOf("FirstName");
-    const colLast  = header.indexOf("LastName");
-    const colScore = header.indexOf("Score");
+  window.addEventListener("load", async () => {
+    const [rows300, rows11, rows800, rows1100] = await Promise.all([
+      fetchCsv(URL_300),
+      fetchCsv(URL_11),
+      fetchCsv(URL_800),
+      fetchCsv(URL_1100)
+    ]);
 
-    const processed = data
-      .filter(r => r[colScore])
-      .map(r => ({
-        score: Number(r[colScore]),
-        first: r[colFirst],
-        last:  r[colLast]
-      }))
-      .sort((a,b)=>b.score-a.score);
-
-    container.innerHTML = "";
-    processed.forEach(e => {
-      const div = document.createElement("div");
-      div.className = "entry";
-      div.textContent = `${e.first} ${e.last} — ${e.score}`;
-      container.appendChild(div);
-    });
-
-    addBlankLines(container);
-  }
-
-  function render1100(rows, container) {
-    const header = rows[0];
-    const data = rows.slice(1);
-    const colFirst = header.indexOf("FirstName");
-    const colLast  = header.indexOf("LastName");
-    const colScore = header.indexOf("Score");
-
-    const processed = data
-      .filter(r => r[colScore])
-      .map(r => ({
-        score: Number(r[colScore]),
-        first: r[colFirst],
-        last:  r[colLast]
-      }))
-      .sort((a,b)=>b.score-a-score);
-
-    container.innerHTML = "";
-    processed.forEach(e => {
-      const div = document.createElement("div");
-      div.className = "entry";
-      div.textContent = `${e.first} ${e.last} — ${e.score}`;
-      container.appendChild(div);
-    });
-  }
-
-  /* MAIN LOAD + SCROLL SETUP */
-  window.addEventListener('load', async () => {
-
-    const c300  = document.getElementById("cat-300");
-    const c11   = document.getElementById("cat-11");
-    const c800  = document.getElementById("cat-800");
+    const c300 = document.getElementById("cat-300");
+    const c11  = document.getElementById("cat-11");
+    const c800 = document.getElementById("cat-800");
     const c1100 = document.getElementById("cat-1100-static");
 
-    const dup300  = document.getElementById("cat-300-dup");
-    const dup11   = document.getElementById("cat-11-dup");
-    const dup800  = document.getElementById("cat-800-dup");
+    renderList(rows300, c300, (r,h)=>`${r[h.indexOf("FirstName")]} ${r[h.indexOf("LastName")]}`);
+    renderList(rows11,  c11,  (r,h)=>`${r[h.indexOf("FirstName")]} ${r[h.indexOf("LastName")]} (${r[h.indexOf("Score")]})`);
+    renderList(rows800, c800, (r,h)=>`${r[h.indexOf("FirstName")]} ${r[h.indexOf("LastName")]} — ${r[h.indexOf("Score")]}`);
 
-    const col300 = document.getElementById("col-300");
-    const col11  = document.getElementById("col-11");
-    const col800 = document.getElementById("col-800");
+    rows1100.slice(1).forEach(r => {
+      const div = document.createElement("div");
+      div.className = "entry";
+      div.textContent = `${r[rows1100[0].indexOf("FirstName")]} ${r[rows1100[0].indexOf("LastName")]} — ${r[rows1100[0].indexOf("Score")]}`;
+      c1100.appendChild(div);
+    });
 
-    async function initialize() {
-      const [rows300, rows11, rows800, rows1100] = await Promise.all([
-        fetchCsv(URL_300),
-        fetchCsv(URL_11),
-        fetchCsv(URL_800),
-        fetchCsv(URL_1100)
-      ]);
+    document.getElementById("cat-300-dup").innerHTML = c300.innerHTML;
+    document.getElementById("cat-11-dup").innerHTML  = c11.innerHTML;
+    document.getElementById("cat-800-dup").innerHTML = c800.innerHTML;
 
-      render300Games(rows300, c300);
-      render11InARow(rows11, c11);
-      render800(rows800, c800);
-      render1100(rows1100, c1100);
-
-      dup300.innerHTML = c300.innerHTML;
-      dup11.innerHTML  = c11.innerHTML;
-      dup800.innerHTML = c800.innerHTML;
-
-      positionScrollBox("scroll-300", col300);
-      positionScrollBox("scroll-11", col11);
-      positionScrollBox("scroll-800", col800);
-
-      startScroll("scroll-300");
-      startScroll("scroll-11");
-      startScroll("scroll-800");
-    }
-
-    function positionScrollBox(scrollId, column) {
-      const scrollBox = document.getElementById(scrollId);
-      const header = column.querySelector(".category-title");
-      const headerHeight = header.offsetHeight;
-      scrollBox.style.top = headerHeight + "px";
-    }
-
-    function startScroll(id) {
-      const box = document.getElementById(id);
-      void box.offsetHeight;
-      const height = box.offsetHeight;
-      const duration = height / 20;
-      box.style.animation = `scroll-up ${duration}s linear infinite`;
-    }
-
-    initialize();
+    startScroll("scroll-300");
+    startScroll("scroll-11");
+    startScroll("scroll-800");
   });
 </script>
 
