@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 
-<!-- ⭐ SAFE VIEWPORT (fixes mobile zoom, avoids Fire Stick blow-up) -->
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- ⭐ FIXED VIEWPORT FOR DIGITAL SIGNAGE (SOLVES PHONE + FIRE STICK ZOOM) -->
+<meta name="viewport" content="width=1280">
 
 <title>McHenry Honor Board</title>
 
@@ -72,7 +72,7 @@
   /* SCROLLING AREA — TOP ANCHORED */
   .scroll-box {
     position: absolute;
-    top: 0; /* JS will push it under the header */
+    top: 0; /* JS pushes it under header */
     width: 100%;
   }
 
@@ -251,7 +251,7 @@
         first: r[colFirst],
         last:  r[colLast]
       }))
-      .sort((a,b)=>b.score-a.score);
+      .sort((a,b)=>b.score-a-score);
 
     container.innerHTML = "";
     processed.forEach(e => {
