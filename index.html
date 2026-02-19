@@ -199,7 +199,14 @@
     const c800 = document.getElementById("cat-800");
     const c1100 = document.getElementById("cat-1100-static");
 
-    renderList(rows300, c300, (r,h)=>`${r[h.indexOf("FirstName")]} ${r[h.indexOf("LastName")]}`);
+    /* ⭐ 300 Games — count restored */
+    renderList(rows300, c300, (r,h)=>{
+      const first = r[h.indexOf("FirstName")];
+      const last  = r[h.indexOf("LastName")];
+      const count = Number(r[h.indexOf("Count")]);
+      return count > 1 ? `${first} ${last} (${count})` : `${first} ${last}`;
+    });
+
     renderList(rows11,  c11,  (r,h)=>`${r[h.indexOf("FirstName")]} ${r[h.indexOf("LastName")]} (${r[h.indexOf("Score")]})`);
     renderList(rows800, c800, (r,h)=>`${r[h.indexOf("FirstName")]} ${r[h.indexOf("LastName")]} — ${r[h.indexOf("Score")]}`);
 
