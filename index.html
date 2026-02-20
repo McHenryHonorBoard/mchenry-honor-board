@@ -19,14 +19,12 @@
     justify-content: center;
   }
 
-  /* Centered fixed-width container */
   .board-container {
     width: 1280px;
     max-width: 1280px;
     margin: 0 auto;
   }
 
-  /* HEADER */
   .header-logos {
     text-align: center;
     padding: 20px 0;
@@ -39,7 +37,6 @@
     border-radius: 10px;
   }
 
-  /* BOOM LOGO WATERMARK */
   .boom-watermark {
     position: fixed;
     bottom: 20px;
@@ -49,7 +46,6 @@
     z-index: 50;
   }
 
-  /* FOUR COLUMN LAYOUT */
   .content-area {
     display: flex;
     height: calc(100vh - 200px);
@@ -64,7 +60,6 @@
     overflow: hidden;
   }
 
-  /* CATEGORY HEADERS */
   .category-title {
     font-size: 36px;
     font-weight: bold;
@@ -78,7 +73,6 @@
     z-index: 5;
   }
 
-  /* SCROLLING AREA — TOP ANCHORED */
   .scroll-box {
     position: absolute;
     top: 0;
@@ -91,7 +85,6 @@
     text-align: center;
   }
 
-  /* Full-height scroll animation */
   @keyframes scroll-up {
     from { transform: translateY(0); }
     to   { transform: translateY(-100%); }
@@ -111,7 +104,6 @@
 
   <div class="content-area">
 
-    <!-- 300 GAMES -->
     <div class="column">
       <div class="category-title">300 Games</div>
       <div class="scroll-box" id="scroll-300">
@@ -120,7 +112,6 @@
       </div>
     </div>
 
-    <!-- 11 IN A ROW -->
     <div class="column">
       <div class="category-title">11 in a Row</div>
       <div class="scroll-box" id="scroll-11">
@@ -129,7 +120,6 @@
       </div>
     </div>
 
-    <!-- 800 SERIES -->
     <div class="column">
       <div class="category-title">800 Series</div>
       <div class="scroll-box" id="scroll-800">
@@ -138,7 +128,6 @@
       </div>
     </div>
 
-    <!-- 1100 SERIES (STATIC) -->
     <div class="column">
       <div class="category-title">1100 Series</div>
       <div id="cat-1100-static" style="padding-top: 10px;"></div>
@@ -181,14 +170,13 @@
     addBlankLines(container);
   }
 
-  /* ⭐ Individual scroll speeds */
   function startScroll(id) {
     const box = document.getElementById(id);
 
     let duration = 120; // default for 800 Series
 
-    if (id === "scroll-300") duration = 180;  // slower
-    if (id === "scroll-11")  duration = 200;  // slowest
+    if (id === "scroll-300") duration = 210;  // slowed down
+    if (id === "scroll-11")  duration = 240;  // slowest
 
     box.style.animation = `scroll-up ${duration}s linear infinite`;
   }
@@ -206,7 +194,6 @@
     const c800 = document.getElementById("cat-800");
     const c1100 = document.getElementById("cat-1100-static");
 
-    /* ⭐ 300 Games — count restored */
     renderList(rows300, c300, (r,h)=>{
       const first = r[h.indexOf("FirstName")];
       const last  = r[h.indexOf("LastName")];
