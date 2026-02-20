@@ -91,7 +91,7 @@
     text-align: center;
   }
 
-  /* ⭐ Slow 120-second full-height scroll */
+  /* Full-height scroll animation */
   @keyframes scroll-up {
     from { transform: translateY(0); }
     to   { transform: translateY(-100%); }
@@ -181,9 +181,16 @@
     addBlankLines(container);
   }
 
+  /* ⭐ Individual scroll speeds */
   function startScroll(id) {
     const box = document.getElementById(id);
-    box.style.animation = "scroll-up 120s linear infinite";
+
+    let duration = 120; // default for 800 Series
+
+    if (id === "scroll-300") duration = 180;  // slower
+    if (id === "scroll-11")  duration = 200;  // slowest
+
+    box.style.animation = `scroll-up ${duration}s linear infinite`;
   }
 
   window.addEventListener("load", async () => {
