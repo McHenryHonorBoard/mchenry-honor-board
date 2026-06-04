@@ -58,8 +58,7 @@
     border-radius: 6px;
     color: white;
     box-shadow: 0 0 12px rgba(0,0,0,0.6);
-    position: relative;
-    z-index: 5;
+    width: 100%;
   }
 
   .scroll-box {
@@ -70,7 +69,6 @@
     overflow: hidden;
   }
 
-  /* ⭐ The tall scrolling content */
   .scroll-content {
     display: flex;
     flex-direction: column;
@@ -78,7 +76,6 @@
     position: relative;
   }
 
-  /* ⭐ Uniform entry layout */
   .entry {
     display: flex;
     justify-content: space-between;
@@ -150,7 +147,14 @@
   const URL_800 = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTo4pC3erQX6RWtulE08AgfjpGAeCgG4QCB1JvM005F21JrpD1IIdpE1axoNQN19pJDqGICriWnvcUA/pub?gid=288383571&single=true&output=csv";
 
   async function fetchCsv(url) {
-    const res = await fetch(url);
+    const res = await fetch(url, {
+      method: "GET",
+      mode: "cors",
+      headers: {
+        "Content-Type": "text/csv"
+      }
+    });
+
     const text = await res.text();
     return text.trim().split(/\r?\n/).map(line => line.split(","));
   }
