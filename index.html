@@ -146,17 +146,21 @@
   const URL_300 = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTo4pC3erQX6RWtulE08AgfjpGAeCgG4QCB1JvM005F21JrpD1IIdpE1axoNQN19pJDqGICriWnvcUA/pub?gid=0&single=true&output=csv";
   const URL_800 = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTo4pC3erQX6RWtulE08AgfjpGAeCgG4QCB1JvM005F21JrpD1IIdpE1axoNQN19pJDqGICriWnvcUA/pub?gid=288383571&single=true&output=csv";
 
+  // ⭐ TAB + COMMA SAFE PARSER
+  function parseCsv(text) {
+    return text
+      .trim()
+      .split(/\r?\n/)
+      .map(line => line.split(/\t|,/));
+  }
+
   async function fetchCsv(url) {
     const res = await fetch(url, {
       method: "GET",
-      mode: "cors",
-      headers: {
-        "Content-Type": "text/csv"
-      }
+      mode: "cors"
     });
-
     const text = await res.text();
-    return text.trim().split(/\r?\n/).map(line => line.split(","));
+    return parseCsv(text);
   }
 
   function addBlankLines(container, count = 30) {
