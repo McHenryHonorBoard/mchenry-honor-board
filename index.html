@@ -93,10 +93,22 @@
     position: relative;
   }
 
+  /* ⭐ Uniform entry layout */
   .entry {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 12px;
     font-size: 28px;
-    padding: 6px 0;
-    text-align: center;
+  }
+
+  .entry-name {
+    text-align: left;
+    flex: 1;
+  }
+
+  .entry-score {
+    text-align: right;
+    white-space: nowrap;
   }
 
   .separator {
@@ -191,7 +203,7 @@
     data.forEach(r => {
       const div = document.createElement("div");
       div.className = "entry";
-      div.textContent = formatter(r, header);
+      div.innerHTML = formatter(r, header);
       container.appendChild(div);
     });
 
@@ -221,12 +233,25 @@
       const first = r[h.indexOf("FirstName")];
       const last  = r[h.indexOf("LastName")];
       const count = Number(r[h.indexOf("Count")]);
-      return count > 1 ? `${first} ${last} (${count})` : `${first} ${last}`;
+      return `
+        <span class="entry-name">${first} ${last}</span>
+        <span class="entry-score">${count > 1 ? "(" + count + ")" : ""}</span>
+      `;
     });
 
-    renderList(rows800, c800, (r,h)=>`${r[h.indexOf("FirstName")]} ${r[h.indexOf("LastName")]} — ${r[h.indexOf("Score")]}`);
+    renderList(rows800, c800, (r,h)=>{
+      return `
+        <span class="entry-name">${r[h.indexOf("FirstName")]} ${r[h.indexOf("LastName")]}</span>
+        <span class="entry-score">${r[h.indexOf("Score")]}</span>
+      `;
+    });
 
-    renderList(rows11,  c11,  (r,h)=>`${r[h.indexOf("FirstName")]} ${r[h.indexOf("LastName")]} (${r[h.indexOf("Score")]})`);
+    renderList(rows11, c11, (r,h)=>{
+      return `
+        <span class="entry-name">${r[h.indexOf("FirstName")]} ${r[h.indexOf("LastName")]}</span>
+        <span class="entry-score">(${r[h.indexOf("Score")]})</span>
+      `;
+    });
 
     document.getElementById("cat-300-dup").innerHTML = c300.innerHTML;
     document.getElementById("cat-800-dup").innerHTML = c800.innerHTML;
