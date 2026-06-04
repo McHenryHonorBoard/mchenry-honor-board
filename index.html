@@ -1,225 +1,138 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-
-<!-- Responsive viewport -->
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
 <title>McHenry Honor Board</title>
 
 <style>
-  body {
-    margin: 0;
-    background: black;
-    color: white;
-    font-family: Arial, sans-serif;
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-  }
+    body {
+        background: black;
+        color: white;
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+    }
 
-  .board-container {
-    width: 1280px;
-    max-width: 1280px;
-    margin: 0 auto;
-  }
+    .board-title {
+        text-align: center;
+        font-size: 48px;
+        font-weight: bold;
+        margin-bottom: 40px;
+        color: #00ff99;
+    }
 
-  .header-logos {
-    text-align: center;
-    padding: 20px 0;
-  }
+    .category {
+        width: 100%;
+        margin-bottom: 60px;
+    }
 
-  .mchenry-logo {
-    height: 150px;
-    background: white;
-    padding: 12px 24px;
-    border-radius: 10px;
-  }
+    .category-header {
+        background: #b30000;
+        color: white;
+        font-size: 36px;
+        font-weight: bold;
+        padding: 12px;
+        text-align: center;
+        border-radius: 6px;
+    }
 
-  .boom-watermark {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    height: 70px;
-    opacity: 0.35;
-    z-index: 50;
-  }
+    .scroll-window {
+        height: 420px;
+        overflow: hidden;
+        margin-top: 10px;
+        border: 2px solid #00ff99;
+        border-radius: 6px;
+        position: relative;
+    }
 
-  .content-area {
-    display: flex;
-    height: calc(100vh - 200px);
-    padding: 0 20px;
-    gap: 20px;
-    box-sizing: border-box;
-  }
+    .scroll-content {
+        display: flex;
+        flex-direction: column;
+        animation: scrollUp 70s linear infinite;
+    }
 
-  .column {
-    width: 25%;
-    position: relative;
-    overflow: hidden;
-  }
+    .name {
+        font-size: 30px;
+        padding: 8px 0;
+        text-align: center;
+    }
 
-  .category-title {
-    font-size: 36px;
-    font-weight: bold;
-    text-align: center;
-    background: #b30000;
-    padding: 14px 0;
-    border-radius: 6px;
-    color: white;
-    box-shadow: 0 0 12px rgba(0,0,0,0.6);
-    position: relative;
-    z-index: 5;
-  }
+    .gap {
+        height: calc(10 * 36px);
+    }
 
-  .scroll-box {
-    position: absolute;
-    top: 0;
-    width: 100%;
-  }
-
-  .entry {
-    font-size: 28px;
-    padding: 6px 0;
-    text-align: center;
-  }
-
-  @keyframes scroll-up {
-    from { transform: translateY(0); }
-    to   { transform: translateY(-100%); }
-  }
+    @keyframes scrollUp {
+        0% { transform: translateY(0); }
+        100% { transform: translateY(-100%); }
+    }
 </style>
 </head>
 
 <body>
 
-<img class="boom-watermark" src="boom-logo.png">
+<div class="board-title">McHenry Honor Board</div>
 
-<div class="board-container">
-
-  <div class="header-logos">
-    <img class="mchenry-logo" src="mchenry-logo.png">
-  </div>
-
-  <div class="content-area">
-
-    <div class="column">
-      <div class="category-title">300 Games</div>
-      <div class="scroll-box" id="scroll-300">
-        <div id="cat-300"></div>
-        <div id="cat-300-dup"></div>
-      </div>
-    </div>
-
-    <div class="column">
-      <div class="category-title">11 in a Row</div>
-      <div class="scroll-box" id="scroll-11">
-        <div id="cat-11"></div>
-        <div id="cat-11-dup"></div>
-      </div>
-    </div>
-
-    <div class="column">
-      <div class="category-title">800 Series</div>
-      <div class="scroll-box" id="scroll-800">
-        <div id="cat-800"></div>
-        <div id="cat-800-dup"></div>
-      </div>
-    </div>
-
-    <div class="column">
-      <div class="category-title">1100 Series</div>
-      <div id="cat-1100-static" style="padding-top: 10px;"></div>
-    </div>
-
-  </div>
-</div>
+<div id="categories"></div>
 
 <script>
-  const URL_300  = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTo4pC3erQX6RWtulE08AgfjpGAeCgG4QCB1JvM005F21JrpD1IIdpE1axoNQN19pJDqGICriWnvcUA/pub?gid=0&single=true&output=csv";
-  const URL_11   = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTo4pC3erQX6RWtulE08AgfjpGAeCgG4QCB1JvM005F21JrpD1IIdpE1axoNQN19pJDqGICriWnvcUA/pub?gid=1645007257&single=true&output=csv";
-  const URL_800  = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTo4pC3erQX6RWtulE08AgfjpGAeCgG4QCB1JvM005F21JrpD1IIdpE1axoNQN19pJDqGICriWnvcUA/pub?gid=288383571&single=true&output=csv";
-  const URL_1100 = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTo4pC3erQX6RWtulE08AgfjpGAeCgG4QCB1JvM005F21JrpD1IIdpE1axoNQN19pJDqGICriWnvcUA/pub?gid=1815197466&single=true&output=csv";
-
-  async function fetchCsv(url) {
-    const res = await fetch(url);
-    const text = await res.text();
-    return text.trim().split(/\r?\n/).map(line => line.split(","));
-  }
-
-  function addBlankLines(container, count = 6) {
-    for (let i = 0; i < count; i++) {
-      const div = document.createElement("div");
-      div.className = "entry";
-      div.innerHTML = "&nbsp;";
-      container.appendChild(div);
+/* ===========================
+   LIVE GOOGLE SHEETS CSV URLS
+   =========================== */
+const categories = [
+    {
+        title: "300 Games",
+        url: "https://docs.google.com/spreadsheets/d/11RQsz_ZIbPKCf2K0L93yPCkMg4jx-zteVoGrJ-UAIKA/export?format=csv&gid=0"
+    },
+    {
+        title: "11 in a Row",
+        url: "https://docs.google.com/spreadsheets/d/11RQsz_ZIbPKCf2K0L93yPCkMg4jx-zteVoGrJ-UAIKA/export?format=csv&gid=1645007257"
+    },
+    {
+        title: "800 Series",
+        url: "https://docs.google.com/spreadsheets/d/11RQsz_ZIbPKCf2K0L93yPCkMg4jx-zteVoGrJ-UAIKA/export?format=csv&gid=288383571"
+    },
+    {
+        title: "1100 Series",
+        url: "https://docs.google.com/spreadsheets/d/11RQsz_ZIbPKCf2K0L93yPCkMg4jx-zteVoGrJ-UAIKA/export?format=csv&gid=1815197466"
     }
-  }
+];
 
-  function renderList(rows, container, formatter) {
-    const header = rows[0];
-    const data = rows.slice(1);
-    container.innerHTML = "";
-    data.forEach(r => {
-      const div = document.createElement("div");
-      div.className = "entry";
-      div.textContent = formatter(r, header);
-      container.appendChild(div);
-    });
-    addBlankLines(container);
-  }
+/* ===========================
+   BUILD CATEGORIES + LOAD DATA
+   =========================== */
+const container = document.getElementById("categories");
 
-  function startScroll(id) {
-    const box = document.getElementById(id);
+categories.forEach(cat => {
+    const section = document.createElement("div");
+    section.className = "category";
 
-    let duration = 120; // default for 800 Series
+    section.innerHTML = `
+        <div class="category-header">${cat.title}</div>
+        <div class="scroll-window">
+            <div class="scroll-content" id="${cat.title.replace(/\s+/g, '')}">
+                <div class="gap"></div>
+            </div>
+        </div>
+    `;
 
-    if (id === "scroll-300") duration = 210;  // slowed down
-    if (id === "scroll-11")  duration = 240;  // slowest
+    container.appendChild(section);
 
-    box.style.animation = `scroll-up ${duration}s linear infinite`;
-  }
+    fetch(cat.url)
+        .then(res => res.text())
+        .then(csv => {
+            const lines = csv.trim().split("\n");
 
-  window.addEventListener("load", async () => {
-    const [rows300, rows11, rows800, rows1100] = await Promise.all([
-      fetchCsv(URL_300),
-      fetchCsv(URL_11),
-      fetchCsv(URL_800),
-      fetchCsv(URL_1100)
-    ]);
+            const contentDiv = document.getElementById(cat.title.replace(/\s+/g, ''));
 
-    const c300 = document.getElementById("cat-300");
-    const c11  = document.getElementById("cat-11");
-    const c800 = document.getElementById("cat-800");
-    const c1100 = document.getElementById("cat-1100-static");
-
-    renderList(rows300, c300, (r,h)=>{
-      const first = r[h.indexOf("FirstName")];
-      const last  = r[h.indexOf("LastName")];
-      const count = Number(r[h.indexOf("Count")]);
-      return count > 1 ? `${first} ${last} (${count})` : `${first} ${last}`;
-    });
-
-    renderList(rows11,  c11,  (r,h)=>`${r[h.indexOf("FirstName")]} ${r[h.indexOf("LastName")]} (${r[h.indexOf("Score")]})`);
-    renderList(rows800, c800, (r,h)=>`${r[h.indexOf("FirstName")]} ${r[h.indexOf("LastName")]} — ${r[h.indexOf("Score")]}`);
-
-    rows1100.slice(1).forEach(r => {
-      const div = document.createElement("div");
-      div.className = "entry";
-      div.textContent = `${r[rows1100[0].indexOf("FirstName")]} ${r[rows1100[0].indexOf("LastName")]} — ${r[rows1100[0].indexOf("Score")]}`;
-      c1100.appendChild(div);
-    });
-
-    document.getElementById("cat-300-dup").innerHTML = c300.innerHTML;
-    document.getElementById("cat-11-dup").innerHTML  = c11.innerHTML;
-    document.getElementById("cat-800-dup").innerHTML = c800.innerHTML;
-
-    startScroll("scroll-300");
-    startScroll("scroll-11");
-    startScroll("scroll-800");
-  });
+            lines.forEach(line => {
+                const name = document.createElement("div");
+                name.className = "name";
+                name.textContent = line.trim();
+                contentDiv.insertBefore(name, contentDiv.querySelector(".gap"));
+            });
+        })
+        .catch(err => console.error("Error loading CSV for", cat.title, err));
+});
 </script>
 
 </body>
-</html>
