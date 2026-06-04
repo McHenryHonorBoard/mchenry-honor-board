@@ -194,13 +194,16 @@
     addSeparator(container);
   }
 
-  function startScroll(id, duration) {
+  function startScroll(id, baseSpeedPerPixel) {
     const content = document.getElementById(id);
 
-    // Wait for full layout
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         const height = content.scrollHeight;
+
+        // Calculate duration so both columns scroll at the same visual speed
+        const duration = height * baseSpeedPerPixel;
+
         content.style.setProperty('--scroll-height', `${height}px`);
         content.style.animation = `scroll-up ${duration}s linear infinite`;
       });
@@ -239,9 +242,12 @@
       document.getElementById("cat-800-dup").innerHTML = c800.innerHTML;
     });
 
-    // Slow, smooth scroll
-    startScroll("scroll-300", 120);
-    startScroll("scroll-800", 120);
+    // Both columns scroll at the same visual speed
+    // Lower number = slower scroll
+    const SPEED = 0.06; // pixels per second
+
+    startScroll("scroll-300", SPEED);
+    startScroll("scroll-800", SPEED);
   });
 </script>
 
