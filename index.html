@@ -19,8 +19,9 @@
     justify-content: center;
   }
 
+  /* ⭐ FIXED: Responsive container — no more forced zoom */
   .board-container {
-    width: 1280px;
+    width: 100%;
     max-width: 1280px;
     margin: 0 auto;
   }
@@ -76,10 +77,10 @@
   /* ⭐ FIXED: scroll-box now has a real height and clipping */
   .scroll-box {
     position: absolute;
-    top: 60px;   /* below the title */
-    bottom: 0;   /* fill the column */
+    top: 60px;
+    bottom: 0;
     width: 100%;
-    overflow: hidden; /* required for visible scrolling */
+    overflow: hidden;
   }
 
   .entry {
