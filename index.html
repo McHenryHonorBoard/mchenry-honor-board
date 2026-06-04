@@ -73,10 +73,13 @@
     z-index: 5;
   }
 
+  /* ⭐ FIXED: scroll-box now has a real height and clipping */
   .scroll-box {
     position: absolute;
-    top: 0;
+    top: 60px;   /* below the title */
+    bottom: 0;   /* fill the column */
     width: 100%;
+    overflow: hidden; /* required for visible scrolling */
   }
 
   .entry {
@@ -175,8 +178,8 @@
 
     let duration = 120; // default for 800 Series
 
-    if (id === "scroll-300") duration = 210;  // slowed down
-    if (id === "scroll-11")  duration = 240;  // slowest
+    if (id === "scroll-300") duration = 210;
+    if (id === "scroll-11")  duration = 240;
 
     box.style.animation = `scroll-up ${duration}s linear infinite`;
   }
