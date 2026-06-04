@@ -19,7 +19,7 @@
     justify-content: center;
   }
 
-  /* ⭐ FIXED: Responsive container — no more forced zoom */
+  /* Responsive container */
   .board-container {
     width: 100%;
     max-width: 1280px;
@@ -47,9 +47,10 @@
     z-index: 50;
   }
 
+  /* Fixed height for Firestick + mobile consistency */
   .content-area {
     display: flex;
-    height: calc(100vh - 200px);
+    height: 720px;
     padding: 0 20px;
     gap: 20px;
     box-sizing: border-box;
@@ -74,7 +75,7 @@
     z-index: 5;
   }
 
-  /* ⭐ FIXED: scroll-box now has a real height and clipping */
+  /* Scroll window */
   .scroll-box {
     position: absolute;
     top: 60px;
@@ -152,7 +153,8 @@
     return text.trim().split(/\r?\n/).map(line => line.split(","));
   }
 
-  function addBlankLines(container, count = 6) {
+  /* ⭐ Mostly-full padding */
+  function addBlankLines(container, count = 15) {
     for (let i = 0; i < count; i++) {
       const div = document.createElement("div");
       div.className = "entry";
@@ -174,15 +176,18 @@
     addBlankLines(container);
   }
 
+  /* ⭐ Recommended TV speeds + 1 second delay */
   function startScroll(id) {
     const box = document.getElementById(id);
 
-    let duration = 120; // default for 800 Series
+    let duration = 90; // default for 800 Series
 
-    if (id === "scroll-300") duration = 210;
-    if (id === "scroll-11")  duration = 240;
+    if (id === "scroll-300") duration = 120;
+    if (id === "scroll-11")  duration = 150;
 
-    box.style.animation = `scroll-up ${duration}s linear infinite`;
+    setTimeout(() => {
+      box.style.animation = `scroll-up ${duration}s linear infinite`;
+    }, 1000); // 1 second delay
   }
 
   window.addEventListener("load", async () => {
