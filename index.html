@@ -194,15 +194,21 @@
     addSeparator(container);
   }
 
-  function startScroll(id, baseSpeedPerPixel) {
+  function startScroll(id, basePixelsPerSecond) {
     const content = document.getElementById(id);
 
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         const height = content.scrollHeight;
 
-        // Calculate duration so both columns scroll at the same visual speed
-        const duration = height * baseSpeedPerPixel;
+        // Match PC speed across all devices
+        const pcHeight = 900; // your desktop baseline
+        const deviceHeight = window.innerHeight;
+
+        // Scale speed so mobile matches PC visually
+        const scale = pcHeight / deviceHeight;
+
+        const duration = height / (basePixelsPerSecond * scale);
 
         content.style.setProperty('--scroll-height', `${height}px`);
         content.style.animation = `scroll-up ${duration}s linear infinite`;
@@ -236,15 +242,13 @@
       `;
     });
 
-    // Duplicate lists AFTER layout
     requestAnimationFrame(() => {
       document.getElementById("cat-300-dup").innerHTML = c300.innerHTML;
       document.getElementById("cat-800-dup").innerHTML = c800.innerHTML;
     });
 
-    // Both columns scroll at the same visual speed
-    // Lower number = slower scroll
-    const SPEED = 0.06; // pixels per second
+    // Base speed (pixels per second)
+    const SPEED = 6;
 
     startScroll("scroll-300", SPEED);
     startScroll("scroll-800", SPEED);
