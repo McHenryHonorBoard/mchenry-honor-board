@@ -21,23 +21,29 @@
         color: #00ff99;
     }
 
+    /* 4 equal columns */
+    .row {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+    }
+
     .category {
-        width: 100%;
-        margin-bottom: 60px;
+        width: 25%;
     }
 
     .category-header {
         background: #b30000;
         color: white;
-        font-size: 36px;
+        font-size: 32px;
         font-weight: bold;
-        padding: 12px;
+        padding: 10px;
         text-align: center;
         border-radius: 6px;
     }
 
     .scroll-window {
-        height: 420px;
+        height: 650px; /* adjust for your TV */
         overflow: hidden;
         margin-top: 10px;
         border: 2px solid #00ff99;
@@ -48,17 +54,18 @@
     .scroll-content {
         display: flex;
         flex-direction: column;
-        animation: scrollUp 70s linear infinite;
+        animation: scrollUp 80s linear infinite; /* slower scroll */
     }
 
     .name {
-        font-size: 30px;
-        padding: 8px 0;
+        font-size: 26px;
+        padding: 6px 0;
         text-align: center;
     }
 
+    /* 10-line gap */
     .gap {
-        height: calc(10 * 36px);
+        height: calc(10 * 32px);
     }
 
     @keyframes scrollUp {
@@ -72,7 +79,7 @@
 
 <div class="board-title">McHenry Honor Board</div>
 
-<div id="categories"></div>
+<div class="row" id="categories"></div>
 
 <script>
 /* ===========================
@@ -98,7 +105,7 @@ const categories = [
 ];
 
 /* ===========================
-   BUILD CATEGORIES + LOAD DATA
+   BUILD 4 COLUMNS + LOAD DATA
    =========================== */
 const container = document.getElementById("categories");
 
@@ -121,7 +128,6 @@ categories.forEach(cat => {
         .then(res => res.text())
         .then(csv => {
             const lines = csv.trim().split("\n");
-
             const contentDiv = document.getElementById(cat.title.replace(/\s+/g, ''));
 
             lines.forEach(line => {
@@ -136,3 +142,4 @@ categories.forEach(cat => {
 </script>
 
 </body>
+</html>
