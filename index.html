@@ -26,6 +26,13 @@
     margin: 0 auto;
   }
 
+  /* Full-width on large PC screens */
+  @media (min-width: 1400px) {
+    .board-container {
+      max-width: 100%;
+    }
+  }
+
   .header-logos {
     text-align: center;
     padding: 20px 0;
@@ -75,10 +82,10 @@
     z-index: 5;
   }
 
-  /* Scroll window */
+  /* Scroll window starts 2 lines below header */
   .scroll-box {
     position: absolute;
-    top: 60px;
+    top: 120px; /* 2-line spacing */
     bottom: 0;
     width: 100%;
     overflow: hidden;
@@ -153,7 +160,7 @@
     return text.trim().split(/\r?\n/).map(line => line.split(","));
   }
 
-  /* ⭐ Mostly-full padding */
+  /* Mostly-full padding */
   function addBlankLines(container, count = 15) {
     for (let i = 0; i < count; i++) {
       const div = document.createElement("div");
@@ -176,18 +183,18 @@
     addBlankLines(container);
   }
 
-  /* ⭐ Recommended TV speeds + 1 second delay */
+  /* Faster scroll speeds + 1 second delay */
   function startScroll(id) {
     const box = document.getElementById(id);
 
-    let duration = 90; // default for 800 Series
+    let duration = 70; // default for 800 Series
 
-    if (id === "scroll-300") duration = 120;
-    if (id === "scroll-11")  duration = 150;
+    if (id === "scroll-300") duration = 90;
+    if (id === "scroll-11")  duration = 110;
 
     setTimeout(() => {
       box.style.animation = `scroll-up ${duration}s linear infinite`;
-    }, 1000); // 1 second delay
+    }, 1000);
   }
 
   window.addEventListener("load", async () => {
