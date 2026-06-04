@@ -2,8 +2,6 @@
 <html>
 <head>
 <meta charset="UTF-8">
-
-<!-- Responsive viewport -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <title>McHenry Honor Board</title>
@@ -19,14 +17,12 @@
     justify-content: center;
   }
 
-  /* Responsive container */
   .board-container {
     width: 100%;
     max-width: 1280px;
     margin: 0 auto;
   }
 
-  /* Full-width on large PC screens */
   @media (min-width: 1400px) {
     .board-container {
       max-width: 100%;
@@ -54,7 +50,6 @@
     z-index: 50;
   }
 
-  /* Fixed height for Firestick + mobile consistency */
   .content-area {
     display: flex;
     height: 720px;
@@ -64,7 +59,7 @@
   }
 
   .column {
-    width: 25%;
+    width: 33.33%;
     position: relative;
     overflow: hidden;
   }
@@ -82,10 +77,9 @@
     z-index: 5;
   }
 
-  /* Scroll window starts 2 lines below header */
   .scroll-box {
     position: absolute;
-    top: 120px; /* 2-line spacing */
+    top: 80px; /* 2-line spacing */
     bottom: 0;
     width: 100%;
     overflow: hidden;
@@ -116,6 +110,7 @@
 
   <div class="content-area">
 
+    <!-- 300 Games -->
     <div class="column">
       <div class="category-title">300 Games</div>
       <div class="scroll-box" id="scroll-300">
@@ -124,14 +119,7 @@
       </div>
     </div>
 
-    <div class="column">
-      <div class="category-title">11 in a Row</div>
-      <div class="scroll-box" id="scroll-11">
-        <div id="cat-11"></div>
-        <div id="cat-11-dup"></div>
-      </div>
-    </div>
-
+    <!-- 800 Series -->
     <div class="column">
       <div class="category-title">800 Series</div>
       <div class="scroll-box" id="scroll-800">
@@ -140,9 +128,13 @@
       </div>
     </div>
 
+    <!-- 11 in a Row -->
     <div class="column">
-      <div class="category-title">1100 Series</div>
-      <div id="cat-1100-static" style="padding-top: 10px;"></div>
+      <div class="category-title">11 in a Row</div>
+      <div class="scroll-box" id="scroll-11">
+        <div id="cat-11"></div>
+        <div id="cat-11-dup"></div>
+      </div>
     </div>
 
   </div>
@@ -150,9 +142,8 @@
 
 <script>
   const URL_300  = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTo4pC3erQX6RWtulE08AgfjpGAeCgG4QCB1JvM005F21JrpD1IIdpE1axoNQN19pJDqGICriWnvcUA/pub?gid=0&single=true&output=csv";
-  const URL_11   = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTo4pC3erQX6RWtulE08AgfjpGAeCgG4QCB1JvM005F21JrpD1IIdpE1axoNQN19pJDqGICriWnvcUA/pub?gid=1645007257&single=true&output=csv";
   const URL_800  = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTo4pC3erQX6RWtulE08AgfjpGAeCgG4QCB1JvM005F21JrpD1IIdpE1axoNQN19pJDqGICriWnvcUA/pub?gid=288383571&single=true&output=csv";
-  const URL_1100 = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTo4pC3erQX6RWtulE08AgfjpGAeCgG4QCB1JvM005F21JrpD1IIdpE1axoNQN19pJDqGICriWnvcUA/pub?gid=1815197466&single=true&output=csv";
+  const URL_11   = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTo4pC3erQX6RWtulE08AgfjpGAeCgG4QCB1JvM005F21JrpD1IIdpE1axoNQN19pJDqGICriWnvcUA/pub?gid=1645007257&single=true&output=csv";
 
   async function fetchCsv(url) {
     const res = await fetch(url);
@@ -160,8 +151,7 @@
     return text.trim().split(/\r?\n/).map(line => line.split(","));
   }
 
-  /* Mostly-full padding */
-  function addBlankLines(container, count = 15) {
+  function addBlankLines(container, count = 20) {
     for (let i = 0; i < count; i++) {
       const div = document.createElement("div");
       div.className = "entry";
@@ -183,14 +173,13 @@
     addBlankLines(container);
   }
 
-  /* Faster scroll speeds + 1 second delay */
   function startScroll(id) {
     const box = document.getElementById(id);
 
-    let duration = 70; // default for 800 Series
+    let duration = 55; // default for 800 Series
 
-    if (id === "scroll-300") duration = 90;
-    if (id === "scroll-11")  duration = 110;
+    if (id === "scroll-300") duration = 70;
+    if (id === "scroll-11")  duration = 90;
 
     setTimeout(() => {
       box.style.animation = `scroll-up ${duration}s linear infinite`;
@@ -198,17 +187,15 @@
   }
 
   window.addEventListener("load", async () => {
-    const [rows300, rows11, rows800, rows1100] = await Promise.all([
+    const [rows300, rows800, rows11] = await Promise.all([
       fetchCsv(URL_300),
-      fetchCsv(URL_11),
       fetchCsv(URL_800),
-      fetchCsv(URL_1100)
+      fetchCsv(URL_11)
     ]);
 
     const c300 = document.getElementById("cat-300");
-    const c11  = document.getElementById("cat-11");
     const c800 = document.getElementById("cat-800");
-    const c1100 = document.getElementById("cat-1100-static");
+    const c11  = document.getElementById("cat-11");
 
     renderList(rows300, c300, (r,h)=>{
       const first = r[h.indexOf("FirstName")];
@@ -217,23 +204,17 @@
       return count > 1 ? `${first} ${last} (${count})` : `${first} ${last}`;
     });
 
-    renderList(rows11,  c11,  (r,h)=>`${r[h.indexOf("FirstName")]} ${r[h.indexOf("LastName")]} (${r[h.indexOf("Score")]})`);
     renderList(rows800, c800, (r,h)=>`${r[h.indexOf("FirstName")]} ${r[h.indexOf("LastName")]} — ${r[h.indexOf("Score")]}`);
 
-    rows1100.slice(1).forEach(r => {
-      const div = document.createElement("div");
-      div.className = "entry";
-      div.textContent = `${r[rows1100[0].indexOf("FirstName")]} ${r[rows1100[0].indexOf("LastName")]} — ${r[rows1100[0].indexOf("Score")]}`;
-      c1100.appendChild(div);
-    });
+    renderList(rows11,  c11,  (r,h)=>`${r[h.indexOf("FirstName")]} ${r[h.indexOf("LastName")]} (${r[h.indexOf("Score")]})`);
 
     document.getElementById("cat-300-dup").innerHTML = c300.innerHTML;
-    document.getElementById("cat-11-dup").innerHTML  = c11.innerHTML;
     document.getElementById("cat-800-dup").innerHTML = c800.innerHTML;
+    document.getElementById("cat-11-dup").innerHTML  = c11.innerHTML;
 
     startScroll("scroll-300");
-    startScroll("scroll-11");
     startScroll("scroll-800");
+    startScroll("scroll-11");
   });
 </script>
 
