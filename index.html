@@ -1,188 +1,38 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>McHenry Honor Board</title>
-
 <style>
-    body {
-        background: black;
-        color: white;
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-    }
+.scroll-window {
+    height: 200px;
+    overflow: hidden;
+    border: 2px solid red;
+}
 
-    /* ===========================
-       TOP TEXT HEADER
-       =========================== */
-    .top-banner {
-        width: 100%;
-        background: white;
-        padding: 25px 0;
-        text-align: center;
-        border-bottom: 4px solid #b30000;
-    }
+.scroll-content {
+    animation: scrollUp 5s linear infinite;
+}
 
-    .top-banner h1 {
-        margin: 0;
-        font-size: 48px;
-        font-weight: bold;
-        color: #b30000;
-    }
-
-    /* ===========================
-       LAYOUT
-       =========================== */
-    .row {
-        display: flex;
-        justify-content: space-between;
-        gap: 20px;
-        padding: 20px;
-    }
-
-    .category {
-        width: 25%;
-    }
-
-    .category-header {
-        background: #b30000;
-        color: white;
-        font-size: 32px;
-        font-weight: bold;
-        padding: 10px;
-        text-align: center;
-        border-radius: 6px;
-    }
-
-    .scroll-window {
-        height: 650px;
-        overflow: hidden;
-        margin-top: 10px;
-        border: 2px solid transparent;
-        border-radius: 6px;
-        position: relative;
-    }
-
-    .scroll-content {
-        display: flex;
-        flex-direction: column;
-        animation: scrollUp linear infinite;
-    }
-
-    .name {
-        font-size: 26px;
-        padding: 6px 0;
-        text-align: center;
-    }
-
-    /* Spacer forces scroll even with short lists */
-    .spacer {
-        height: 800px;
-    }
-
-    @keyframes scrollUp {
-        0% { transform: translateY(0); }
-        100% { transform: translateY(-100%); }
-    }
-
-    /* INDIVIDUAL SPEEDS */
-    #300Games { animation-duration: 90s; }
-    #11inaRow { animation-duration: 120s; }
-    #800Series { animation-duration: 70s; }
-    #1100Series { animation-duration: 150s; }
-
+@keyframes scrollUp {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-100%); }
+}
 </style>
 </head>
 
 <body>
 
-<div class="top-banner">
-    <h1>McHenry Bowl Honor Board – Est. 1959</h1>
+<div class="scroll-window">
+    <div class="scroll-content">
+        <div>Line 1</div>
+        <div>Line 2</div>
+        <div>Line 3</div>
+        <div>Line 4</div>
+        <div>Line 5</div>
+        <div>Line 6</div>
+        <div>Line 7</div>
+        <div>Line 8</div>
+    </div>
 </div>
-
-<div class="row" id="categories"></div>
-
-<script>
-/* ===========================
-   LIVE GOOGLE SHEETS CSV URLS
-   =========================== */
-const categories = [
-    {
-        title: "300 Games",
-        id: "300Games",
-        url: "https://docs.google.com/spreadsheets/d/11RQsz_ZIbPKCf2K0L93yPCkMg4jx-zteVoGrJ-UAIKA/export?format=csv&gid=0"
-    },
-    {
-        title: "11 in a Row",
-        id: "11inaRow",
-        url: "https://docs.google.com/spreadsheets/d/11RQsz_ZIbPKCf2K0L93yPCkMg4jx-zteVoGrJ-UAIKA/export?format=csv&gid=1645007257"
-    },
-    {
-        title: "800 Series",
-        id: "800Series",
-        url: "https://docs.google.com/spreadsheets/d/11RQsz_ZIbPKCf2K0L93yPCkMg4jx-zteVoGrJ-UAIKA/export?format=csv&gid=288383571"
-    },
-    {
-        title: "1100 Series",
-        id: "1100Series",
-        url: "https://docs.google.com/spreadsheets/d/11RQsz_ZIbPKCf2K0L93yPCkMg4jx-zteVoGrJ-UAIKA/export?format=csv&gid=1815197466"
-    }
-];
-
-const container = document.getElementById("categories");
-
-/* ===========================
-   BUILD COLUMNS + LOAD DATA
-   =========================== */
-categories.forEach(cat => {
-    const section = document.createElement("div");
-    section.className = "category";
-
-    section.innerHTML = `
-        <div class="category-header">${cat.title}</div>
-        <div class="scroll-window">
-            <div class="scroll-content" id="${cat.id}"></div>
-        </div>
-    `;
-
-    container.appendChild(section);
-
-    fetch(cat.url)
-        .then(res => res.text())
-        .then(csv => {
-            const lines = csv.trim().split("\n").slice(1); // skip header
-            const contentDiv = document.getElementById(cat.id);
-
-            function addLines() {
-                lines.forEach(line => {
-                    const parts = line.split(",");
-                    const first = parts[0]?.trim() || "";
-                    const last  = parts[1]?.trim() || "";
-                    const score = parts[2]?.trim() || "";
-
-                    const formatted = `${first} ${last} – ${score}`.trim();
-
-                    const name = document.createElement("div");
-                    name.className = "name";
-                    name.textContent = formatted;
-
-                    contentDiv.appendChild(name);
-                });
-            }
-
-            // Add list twice
-            addLines();
-            addLines();
-
-            // Add spacer to force scroll
-            const spacer = document.createElement("div");
-            spacer.className = "spacer";
-            contentDiv.appendChild(spacer);
-        })
-        .catch(err => console.error("Error loading CSV for", cat.title, err));
-});
-</script>
 
 </body>
 </html>
