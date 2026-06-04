@@ -59,7 +59,7 @@
         height: 650px;
         overflow: hidden;
         margin-top: 10px;
-        border: 2px solid transparent; /* remove green box */
+        border: 2px solid transparent;
         border-radius: 6px;
         position: relative;
     }
@@ -74,6 +74,11 @@
         font-size: 26px;
         padding: 6px 0;
         text-align: center;
+    }
+
+    /* Spacer forces scroll even with short lists */
+    .spacer {
+        height: 800px;
     }
 
     @keyframes scrollUp {
@@ -166,9 +171,14 @@ categories.forEach(cat => {
                 });
             }
 
-            // Add list twice to force scrolling
+            // Add list twice
             addLines();
             addLines();
+
+            // Add spacer to force scroll
+            const spacer = document.createElement("div");
+            spacer.className = "spacer";
+            contentDiv.appendChild(spacer);
         })
         .catch(err => console.error("Error loading CSV for", cat.title, err));
 });
