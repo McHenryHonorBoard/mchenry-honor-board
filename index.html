@@ -13,27 +13,29 @@
         padding: 0;
     }
 
-    /* ===========================
-       TOP TEXT HEADER
-       =========================== */
     .top-banner {
         width: 100%;
         background: white;
-        padding: 25px 0;
+        padding: 20px 0;
+        position: relative;
         text-align: center;
         border-bottom: 4px solid #b30000;
     }
 
-    .top-banner h1 {
-        margin: 0;
-        font-size: 48px;
+    .top-banner img {
+        height: 120px;
+        object-fit: contain;
+    }
+
+    .est1959 {
+        position: absolute;
+        right: 25px;
+        top: 20px;
+        font-size: 32px;
         font-weight: bold;
         color: #b30000;
     }
 
-    /* ===========================
-       LAYOUT
-       =========================== */
     .row {
         display: flex;
         justify-content: space-between;
@@ -85,9 +87,6 @@
         100% { transform: translateY(-100%); }
     }
 
-    /* ===========================
-       INDIVIDUAL SPEED MATCHING
-       =========================== */
     #300Games { animation-duration: 90s; }
     #11inaRow { animation-duration: 120s; }
     #800Series { animation-duration: 70s; }
@@ -98,22 +97,14 @@
 
 <body>
 
-<!-- ===========================
-     TOP TEXT HEADER
-     =========================== -->
 <div class="top-banner">
-    <h1>McHenry Bowl Honor Board – Est. 1959</h1>
+    <img src="https://www.mchenrybowl.com/Portals/0/mchenrybowl-removebg-preview.png?ver=ebR_nG8ePG5QUq0h0Iy0KA%3D%3D" alt="McHenry Bowl Logo">
+    <div class="est1959">Est. 1959</div>
 </div>
 
-<!-- ===========================
-     FOUR COLUMNS
-     =========================== -->
 <div class="row" id="categories"></div>
 
 <script>
-/* ===========================
-   LIVE GOOGLE SHEETS CSV URLS
-   =========================== */
 const categories = [
     {
         title: "300 Games",
@@ -137,9 +128,6 @@ const categories = [
     }
 ];
 
-/* ===========================
-   BUILD COLUMNS + LOAD DATA
-   =========================== */
 const container = document.getElementById("categories");
 
 categories.forEach(cat => {
@@ -161,13 +149,9 @@ categories.forEach(cat => {
         .then(res => res.text())
         .then(csv => {
             const lines = csv.trim().split("\n");
-
-            // Skip the first row (header)
-            const dataLines = lines.slice(1);
-
             const contentDiv = document.getElementById(cat.id);
 
-            dataLines.forEach(line => {
+            lines.forEach(line => {
                 const parts = line.split(",");
 
                 const first = parts[0]?.trim() || "";
@@ -188,6 +172,4 @@ categories.forEach(cat => {
 </script>
 
 </body>
-    
-
 </html>
