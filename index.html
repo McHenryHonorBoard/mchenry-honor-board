@@ -169,8 +169,8 @@ categories.forEach(cat => {
                 contentDiv.appendChild(name);
             });
 
-            // If list is long enough, enable scrolling
-            if (lines.length >= 12) {
+            // Scroll if list has 4 or more names
+            if (lines.length >= 4) {
                 contentDiv.classList.add("scrolling");
             }
         })
