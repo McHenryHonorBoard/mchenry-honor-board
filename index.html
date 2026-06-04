@@ -77,7 +77,6 @@
     z-index: 5;
   }
 
-  /* Scroll window starts under header */
   .scroll-box {
     position: absolute;
     top: 80px;
@@ -92,7 +91,13 @@
     text-align: center;
   }
 
-  /* ⭐ Bottom-to-top continuous scroll */
+  .separator {
+    font-size: 24px;
+    text-align: center;
+    opacity: 0.6;
+    margin: 10px 0;
+  }
+
   @keyframes scroll-up {
     from { transform: translateY(100%); }
     to   { transform: translateY(-100%); }
@@ -153,16 +158,37 @@
     return text.trim().split(/\r?\n/).map(line => line.split(","));
   }
 
+  function addBlankLines(container, count = 30) {
+    for (let i = 0; i < count; i++) {
+      const div = document.createElement("div");
+      div.className = "entry";
+      div.innerHTML = "&nbsp;";
+      container.appendChild(div);
+    }
+  }
+
+  function addSeparator(container) {
+    const sep = document.createElement("div");
+    sep.className = "separator";
+    sep.textContent = "------------------------------";
+    container.appendChild(sep);
+  }
+
   function renderList(rows, container, formatter) {
     const header = rows[0];
     const data = rows.slice(1);
+
     container.innerHTML = "";
+
     data.forEach(r => {
       const div = document.createElement("div");
       div.className = "entry";
       div.textContent = formatter(r, header);
       container.appendChild(div);
     });
+
+    addBlankLines(container);
+    addSeparator(container);
   }
 
   function startScroll(id, duration) {
@@ -198,9 +224,9 @@
     document.getElementById("cat-800-dup").innerHTML = c800.innerHTML;
     document.getElementById("cat-11-dup").innerHTML  = c11.innerHTML;
 
-    startScroll("scroll-300", 60);
-    startScroll("scroll-800", 60);
-    startScroll("scroll-11",  60);
+    startScroll("scroll-300", 40);
+    startScroll("scroll-800", 40);
+    startScroll("scroll-11",  40);
   });
 </script>
 
