@@ -74,6 +74,7 @@
     flex-direction: column;
     width: 100%;
     position: relative;
+    --scroll-height: 2000px;
   }
 
   .entry {
@@ -101,8 +102,8 @@
   }
 
   @keyframes scroll-up {
-    from { transform: translateY(100%); }
-    to   { transform: translateY(-100%); }
+    from { transform: translateY(0); }
+    to   { transform: translateY(calc(-1 * var(--scroll-height))); }
   }
 </style>
 </head>
@@ -155,10 +156,7 @@
   }
 
   async function fetchCsv(url) {
-    const res = await fetch(url, {
-      method: "GET",
-      mode: "cors"
-    });
+    const res = await fetch(url);
     const text = await res.text();
     return parseCsv(text);
   }
@@ -180,15 +178,12 @@
   }
 
   function renderList(rows, container, formatter) {
-    if (!rows || rows.length === 0) return;
-
     const header = rows[0];
     const data = rows.slice(1);
 
     container.innerHTML = "";
 
     data.forEach(r => {
-      if (!r || r.length === 0) return;
       const div = document.createElement("div");
       div.className = "entry";
       div.innerHTML = formatter(r, header);
@@ -201,46 +196,52 @@
 
   function startScroll(id, duration) {
     const content = document.getElementById(id);
-    setTimeout(() => {
-      content.style.animation = `scroll-up ${duration}s linear infinite`;
-    }, 1000);
+
+    // Wait for full layout
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const height = content.scrollHeight;
+        content.style.setProperty('--scroll-height', `${height}px`);
+        content.style.animation = `scroll-up ${duration}s linear infinite`;
+      });
+    });
   }
 
   window.addEventListener("load", async () => {
-    try {
-      const [rows300, rows800] = await Promise.all([
-        fetchCsv(URL_300),
-        fetchCsv(URL_800)
-      ]);
+    const [rows300, rows800] = await Promise.all([
+      fetchCsv(URL_300),
+      fetchCsv(URL_800)
+    ]);
 
-      const c300 = document.getElementById("cat-300");
-      const c800 = document.getElementById("cat-800");
+    const c300 = document.getElementById("cat-300");
+    const c800 = document.getElementById("cat-800");
 
-      renderList(rows300, c300, (r,h)=>{
-        const first = r[h.indexOf("FirstName")];
-        const last  = r[h.indexOf("LastName")];
-        const count = Number(r[h.indexOf("Count")]);
-        return `
-          <span class="entry-name">${first} ${last}</span>
-          <span class="entry-score">${count > 1 ? "(" + count + ")" : ""}</span>
-        `;
-      });
+    renderList(rows300, c300, (r,h)=>{
+      const first = r[h.indexOf("FirstName")];
+      const last  = r[h.indexOf("LastName")];
+      const count = Number(r[h.indexOf("Count")]);
+      return `
+        <span class="entry-name">${first} ${last}</span>
+        <span class="entry-score">${count > 1 ? "(" + count + ")" : ""}</span>
+      `;
+    });
 
-      renderList(rows800, c800, (r,h)=>{
-        return `
-          <span class="entry-name">${r[h.indexOf("FirstName")]} ${r[h.indexOf("LastName")]}</span>
-          <span class="entry-score">${r[h.indexOf("Score")]}</span>
-        `;
-      });
+    renderList(rows800, c800, (r,h)=>{
+      return `
+        <span class="entry-name">${r[h.indexOf("FirstName")]} ${r[h.indexOf("LastName")]}</span>
+        <span class="entry-score">${r[h.indexOf("Score")]}</span>
+      `;
+    });
 
+    // Duplicate lists AFTER layout
+    requestAnimationFrame(() => {
       document.getElementById("cat-300-dup").innerHTML = c300.innerHTML;
       document.getElementById("cat-800-dup").innerHTML = c800.innerHTML;
+    });
 
-      startScroll("scroll-300", 40);
-      startScroll("scroll-800", 40);
-    } catch (e) {
-      console.error("Error loading CSV:", e);
-    }
+    // Slow, smooth scroll
+    startScroll("scroll-300", 120);
+    startScroll("scroll-800", 120);
   });
 </script>
 
