@@ -85,6 +85,14 @@
     overflow: hidden;
   }
 
+  /* ⭐ FIX: Force lists to grow to full height */
+  .scroll-box > div {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    position: relative;
+  }
+
   .entry {
     font-size: 28px;
     padding: 6px 0;
