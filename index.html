@@ -77,9 +77,10 @@
     z-index: 5;
   }
 
+  /* Scroll window starts under header */
   .scroll-box {
     position: absolute;
-    top: 80px; /* 2-line spacing */
+    top: 80px;
     bottom: 0;
     width: 100%;
     overflow: hidden;
@@ -91,8 +92,9 @@
     text-align: center;
   }
 
+  /* ⭐ Bottom-to-top continuous scroll */
   @keyframes scroll-up {
-    from { transform: translateY(0); }
+    from { transform: translateY(100%); }
     to   { transform: translateY(-100%); }
   }
 </style>
@@ -151,15 +153,6 @@
     return text.trim().split(/\r?\n/).map(line => line.split(","));
   }
 
-  function addBlankLines(container, count = 20) {
-    for (let i = 0; i < count; i++) {
-      const div = document.createElement("div");
-      div.className = "entry";
-      div.innerHTML = "&nbsp;";
-      container.appendChild(div);
-    }
-  }
-
   function renderList(rows, container, formatter) {
     const header = rows[0];
     const data = rows.slice(1);
@@ -170,17 +163,10 @@
       div.textContent = formatter(r, header);
       container.appendChild(div);
     });
-    addBlankLines(container);
   }
 
-  function startScroll(id) {
+  function startScroll(id, duration) {
     const box = document.getElementById(id);
-
-    let duration = 55; // default for 800 Series
-
-    if (id === "scroll-300") duration = 70;
-    if (id === "scroll-11")  duration = 90;
-
     setTimeout(() => {
       box.style.animation = `scroll-up ${duration}s linear infinite`;
     }, 1000);
@@ -212,9 +198,9 @@
     document.getElementById("cat-800-dup").innerHTML = c800.innerHTML;
     document.getElementById("cat-11-dup").innerHTML  = c11.innerHTML;
 
-    startScroll("scroll-300");
-    startScroll("scroll-800");
-    startScroll("scroll-11");
+    startScroll("scroll-300", 60);
+    startScroll("scroll-800", 60);
+    startScroll("scroll-11",  60);
   });
 </script>
 
