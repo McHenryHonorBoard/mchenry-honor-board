@@ -23,12 +23,6 @@
     margin: 0 auto;
   }
 
-  @media (min-width: 1400px) {
-    .board-container {
-      max-width: 100%;
-    }
-  }
-
   .header-logos {
     text-align: center;
     padding: 20px 0;
@@ -41,15 +35,6 @@
     border-radius: 10px;
   }
 
-  .boom-watermark {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    height: 70px;
-    opacity: 0.35;
-    z-index: 50;
-  }
-
   .content-area {
     display: flex;
     height: 720px;
@@ -59,7 +44,7 @@
   }
 
   .column {
-    width: 33.33%;
+    width: 50%;
     position: relative;
     overflow: hidden;
   }
@@ -85,8 +70,8 @@
     overflow: hidden;
   }
 
-  /* ⭐ FIX: Force lists to grow to full height */
-  .scroll-box > div {
+  /* ⭐ The tall scrolling content */
+  .scroll-content {
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -127,8 +112,6 @@
 
 <body>
 
-<img class="boom-watermark" src="boom-logo.png">
-
 <div class="board-container">
 
   <div class="header-logos">
@@ -140,27 +123,22 @@
     <!-- 300 Games -->
     <div class="column">
       <div class="category-title">300 Games</div>
-      <div class="scroll-box" id="scroll-300">
-        <div id="cat-300"></div>
-        <div id="cat-300-dup"></div>
+      <div class="scroll-box">
+        <div class="scroll-content" id="scroll-300">
+          <div id="cat-300"></div>
+          <div id="cat-300-dup"></div>
+        </div>
       </div>
     </div>
 
     <!-- 800 Series -->
     <div class="column">
       <div class="category-title">800 Series</div>
-      <div class="scroll-box" id="scroll-800">
-        <div id="cat-800"></div>
-        <div id="cat-800-dup"></div>
-      </div>
-    </div>
-
-    <!-- 11 in a Row -->
-    <div class="column">
-      <div class="category-title">11 in a Row</div>
-      <div class="scroll-box" id="scroll-11">
-        <div id="cat-11"></div>
-        <div id="cat-11-dup"></div>
+      <div class="scroll-box">
+        <div class="scroll-content" id="scroll-800">
+          <div id="cat-800"></div>
+          <div id="cat-800-dup"></div>
+        </div>
       </div>
     </div>
 
@@ -168,9 +146,8 @@
 </div>
 
 <script>
-  const URL_300  = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTo4pC3erQX6RWtulE08AgfjpGAeCgG4QCB1JvM005F21JrpD1IIdpE1axoNQN19pJDqGICriWnvcUA/pub?gid=0&single=true&output=csv";
-  const URL_800  = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTo4pC3erQX6RWtulE08AgfjpGAeCgG4QCB1JvM005F21JrpD1IIdpE1axoNQN19pJDqGICriWnvcUA/pub?gid=288383571&single=true&output=csv";
-  const URL_11   = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTo4pC3erQX6RWtulE08AgfjpGAeCgG4QCB1JvM005F21JrpD1IIdpE1axoNQN19pJDqGICriWnvcUA/pub?gid=1645007257&single=true&output=csv";
+  const URL_300 = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTo4pC3erQX6RWtulE08AgfjpGAeCgG4QCB1JvM005F21JrpD1IIdpE1axoNQN19pJDqGICriWnvcUA/pub?gid=0&single=true&output=csv";
+  const URL_800 = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTo4pC3erQX6RWtulE08AgfjpGAeCgG4QCB1JvM005F21JrpD1IIdpE1axoNQN19pJDqGICriWnvcUA/pub?gid=288383571&single=true&output=csv";
 
   async function fetchCsv(url) {
     const res = await fetch(url);
@@ -212,22 +189,20 @@
   }
 
   function startScroll(id, duration) {
-    const box = document.getElementById(id);
+    const content = document.getElementById(id);
     setTimeout(() => {
-      box.style.animation = `scroll-up ${duration}s linear infinite`;
+      content.style.animation = `scroll-up ${duration}s linear infinite`;
     }, 1000);
   }
 
   window.addEventListener("load", async () => {
-    const [rows300, rows800, rows11] = await Promise.all([
+    const [rows300, rows800] = await Promise.all([
       fetchCsv(URL_300),
-      fetchCsv(URL_800),
-      fetchCsv(URL_11)
+      fetchCsv(URL_800)
     ]);
 
     const c300 = document.getElementById("cat-300");
     const c800 = document.getElementById("cat-800");
-    const c11  = document.getElementById("cat-11");
 
     renderList(rows300, c300, (r,h)=>{
       const first = r[h.indexOf("FirstName")];
@@ -246,20 +221,11 @@
       `;
     });
 
-    renderList(rows11, c11, (r,h)=>{
-      return `
-        <span class="entry-name">${r[h.indexOf("FirstName")]} ${r[h.indexOf("LastName")]}</span>
-        <span class="entry-score">(${r[h.indexOf("Score")]})</span>
-      `;
-    });
-
     document.getElementById("cat-300-dup").innerHTML = c300.innerHTML;
     document.getElementById("cat-800-dup").innerHTML = c800.innerHTML;
-    document.getElementById("cat-11-dup").innerHTML  = c11.innerHTML;
 
     startScroll("scroll-300", 40);
     startScroll("scroll-800", 40);
-    startScroll("scroll-11",  40);
   });
 </script>
 
