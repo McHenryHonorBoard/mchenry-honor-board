@@ -41,7 +41,7 @@
     overflow: hidden;
   }
 
-  /* ⭐ Category title restored to fixed size */
+  /* ⭐ Category title (fixed size) */
   .category-title {
     font-size: 36px;
     font-weight: 900;
@@ -68,7 +68,7 @@
     flex-direction: column;
     width: 100%;
     position: relative;
-    opacity: 0; /* hide until ready */
+    opacity: 0;
     --scroll-height: 2000px;
     --start-offset: 0px;
   }
@@ -78,7 +78,7 @@
     display: grid;
     grid-template-columns: 65% 35%;
     padding: 0.4vw 1vw;
-    font-size: 2.2vw; /* responsive names */
+    font-size: 2.2vw;
     align-items: center;
   }
 
@@ -103,7 +103,7 @@
     to   { transform: translateY(calc(-1 * var(--scroll-height))); }
   }
 
-  /* ⭐ Banner restored to fixed size */
+  /* ⭐ CELEBRATION MODE BANNER (Option C) */
   @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap');
 
   .footer-banner {
@@ -111,14 +111,31 @@
     color: black;
     text-align: center;
     font-family: 'Montserrat', sans-serif;
-    font-size: 34px; /* restored */
+    font-size: 34px;
     font-weight: 900;
     padding: 20px 0;
     border-top: 8px solid #b30000;
     letter-spacing: 2px;
     text-transform: uppercase;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.35);
     box-shadow: 0 -4px 14px rgba(0,0,0,0.45);
+
+    /* ⭐ Celebration animation */
+    animation: celebrate 2.5s ease-in-out infinite;
+  }
+
+  @keyframes celebrate {
+    0% {
+      text-shadow: 0 0 8px #fff;
+      color: black;
+    }
+    50% {
+      text-shadow: 0 0 18px #ff0000;
+      color: #b30000;
+    }
+    100% {
+      text-shadow: 0 0 8px #fff;
+      color: black;
+    }
   }
 </style>
 </head>
@@ -227,7 +244,7 @@
 
       content.style.animation = `scroll-up ${duration}s linear infinite`;
 
-      content.style.opacity = 1; // fade in after offset applied
+      content.style.opacity = 1;
 
     }, 250);
   }
@@ -264,7 +281,7 @@
     });
 
     /* ⭐ SPEED = 32 */
-    const SPEED = 48;
+    const SPEED = 32;
 
     startScroll("scroll-300", SPEED);
     startScroll("scroll-800", SPEED);
