@@ -7,6 +7,8 @@
 <title>McHenry Honor Board</title>
 
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&display=swap');
+
   body {
     margin: 0;
     background: black;
@@ -41,7 +43,7 @@
     overflow: hidden;
   }
 
-  /* ⭐ Category title (fixed size) */
+  /* Category title */
   .category-title {
     font-size: 36px;
     font-weight: 900;
@@ -54,7 +56,7 @@
     width: 100%;
   }
 
-  /* ⭐ Scroll window */
+  /* Scroll window */
   .scroll-box {
     position: absolute;
     top: 80px;
@@ -73,7 +75,7 @@
     --start-offset: 0px;
   }
 
-  /* ⭐ Guaranteed 65/35 spacing using grid */
+  /* 65/35 spacing */
   .entry {
     display: grid;
     grid-template-columns: 65% 35%;
@@ -103,39 +105,19 @@
     to   { transform: translateY(calc(-1 * var(--scroll-height))); }
   }
 
-  /* ⭐ CELEBRATION MODE BANNER (Option C) */
-  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap');
-
+  /* ⭐ NEW CURSIVE BANNER */
   .footer-banner {
     background: linear-gradient(to bottom, #ffffff, #e8e8e8);
     color: black;
     text-align: center;
-    font-family: 'Montserrat', sans-serif;
-    font-size: 34px;
-    font-weight: 900;
-    padding: 20px 0;
+    font-family: 'Dancing Script', cursive;
+    font-size: 48px;
+    font-weight: 700;
+    padding: 18px 0;
     border-top: 8px solid #b30000;
-    letter-spacing: 2px;
-    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.35);
     box-shadow: 0 -4px 14px rgba(0,0,0,0.45);
-
-    /* ⭐ Celebration animation */
-    animation: celebrate 2.5s ease-in-out infinite;
-  }
-
-  @keyframes celebrate {
-    0% {
-      text-shadow: 0 0 8px #fff;
-      color: black;
-    }
-    50% {
-      text-shadow: 0 0 18px #ff0000;
-      color: #b30000;
-    }
-    100% {
-      text-shadow: 0 0 8px #fff;
-      color: black;
-    }
   }
 </style>
 </head>
@@ -222,7 +204,6 @@
     addSeparator(container);
   }
 
-  /* ⭐ Mid-screen start + no flicker + speed fix */
   function startScroll(id, basePixelsPerSecond) {
     const content = document.getElementById(id);
     const scrollBox = content.parentElement;
@@ -243,7 +224,6 @@
       const duration = height / (basePixelsPerSecond * scale);
 
       content.style.animation = `scroll-up ${duration}s linear infinite`;
-
       content.style.opacity = 1;
 
     }, 250);
@@ -280,7 +260,6 @@
       document.getElementById("cat-800-dup").innerHTML = c800.innerHTML;
     });
 
-    /* ⭐ SPEED = 32 */
     const SPEED = 32;
 
     startScroll("scroll-300", SPEED);
