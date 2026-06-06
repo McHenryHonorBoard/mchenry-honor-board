@@ -1,3 +1,11 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>McHenry Honor Board</title>
+
 <style>
   body {
     margin: 0;
@@ -5,20 +13,17 @@
     color: white;
     font-family: Arial, sans-serif;
     overflow: hidden;
-    display: flex;
-    justify-content: center;
+    width: 100%;
   }
 
   .board-container {
     width: 100%;
-    max-width: 1280px;
+    max-width: 1600px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
     height: 100vh;
   }
-
-  /* REMOVE TOP LOGO — no header */
 
   .content-area {
     flex: 1;
@@ -27,17 +32,18 @@
     gap: 20px;
     box-sizing: border-box;
     margin-top: 10px;
+    width: 100%;
   }
 
   .column {
-    width: 50%;
+    flex: 1;
     position: relative;
     overflow: hidden;
   }
 
   .category-title {
     font-size: 36px;
-    font-weight: bold;
+    font-weight: 900;
     text-align: center;
     background: #b30000;
     padding: 14px 0;
@@ -55,23 +61,66 @@
     overflow: hidden;
   }
 
-  /* NEW BOTTOM BANNER */
+  .scroll-content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    position: relative;
+    --scroll-height: 2000px;
+  }
+
+  .entry {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 12px;
+    font-size: 28px;
+  }
+
+  .entry-name {
+    text-align: left;
+    flex: 1;
+  }
+
+  .entry-score {
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .separator {
+    font-size: 24px;
+    text-align: center;
+    opacity: 0.6;
+    margin: 10px 0;
+  }
+
+  @keyframes scroll-up {
+    from { transform: translateY(0); }
+    to   { transform: translateY(calc(-1 * var(--scroll-height))); }
+  }
+
+  /* ⭐ STYLED BOTTOM BANNER */
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap');
+
   .footer-banner {
     background: white;
     color: black;
     text-align: center;
-    font-size: 32px;
-    font-weight: bold;
-    padding: 12px 0;
-    border-top: 4px solid #b30000;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 34px;
+    font-weight: 900;
+    padding: 16px 0;
+    border-top: 6px solid #b30000;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    box-shadow: 0 -4px 12px rgba(0,0,0,0.4);
   }
 </style>
+</head>
 
 <body>
 
 <div class="board-container">
 
-  <!-- MAIN CONTENT -->
   <div class="content-area">
 
     <!-- 300 Games -->
@@ -98,9 +147,117 @@
 
   </div>
 
-  <!-- NEW BOTTOM BANNER -->
   <div class="footer-banner">
     McHenry Bowl Honor Board — Est. 1959
   </div>
 
 </div>
+
+<script>
+  const URL_300 = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT0YrweqDspeSwxTSzqDFQB_MxwTMkx-tdFzzuoOUv89OS3Hb4Je6jyxNuXM_6lcIOCmRRGgp91VlF8/pub?gid=0&single=true&output=csv";
+  const URL_800 = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT0YrweqDspeSwxTSzqDFQB_MxwTMkx-tdFzzuoOUv89OS3Hb4Je6jyxNuXM_6lcIOCmRRGgp91VlF8/pub?gid=288383571&single=true&output=csv";
+
+  function parseCsv(text) {
+    return text
+      .trim()
+      .split(/\r?\n/)
+      .map(line => line.split(/\t|,/));
+  }
+
+  async function fetchCsv(url) {
+    const res = await fetch(url);
+    const text = await res.text();
+    return parseCsv(text);
+  }
+
+  function addBlankLines(container, count = 30) {
+    for (let i = 0; i < count; i++) {
+      const div = document.createElement("div");
+      div.className = "entry";
+      div.innerHTML = "&nbsp;";
+      container.appendChild(div);
+    }
+  }
+
+  function addSeparator(container) {
+    const sep = document.createElement("div");
+    sep.className = "separator";
+    sep.textContent = "------------------------------";
+    container.appendChild(sep);
+  }
+
+  function renderList(rows, container, formatter) {
+    const header = rows[0];
+    const data = rows.slice(1);
+
+    container.innerHTML = "";
+
+    data.forEach(r => {
+      const div = document.createElement("div");
+      div.className = "entry";
+      div.innerHTML = formatter(r, header);
+      container.appendChild(div);
+    });
+
+    addBlankLines(container);
+    addSeparator(container);
+  }
+
+  /* ⭐ FINAL SCROLL FIX */
+  function startScroll(id, basePixelsPerSecond) {
+    const content = document.getElementById(id);
+
+    setTimeout(() => {
+      const height = content.scrollHeight;
+
+      const pcHeight = 900; 
+      const deviceHeight = window.innerHeight;
+      const scale = pcHeight / deviceHeight;
+
+      const duration = height / (basePixelsPerSecond * scale);
+
+      content.style.setProperty('--scroll-height', `${height}px`);
+      content.style.animation = `scroll-up ${duration}s linear infinite`;
+    }, 250);
+  }
+
+  window.addEventListener("load", async () => {
+    const [rows300, rows800] = await Promise.all([
+      fetchCsv(URL_300),
+      fetchCsv(URL_800)
+    ]);
+
+    const c300 = document.getElementById("cat-300");
+    const c800 = document.getElementById("cat-800");
+
+    renderList(rows300, c300, (r,h)=>{
+      const first = r[h.indexOf("FirstName")];
+      const last  = r[h.indexOf("LastName")];
+      const count = Number(r[h.indexOf("Count")]);
+      return `
+        <span class="entry-name">${first} ${last}</span>
+        <span class="entry-score">${count > 1 ? "(" + count + ")" : ""}</span>
+      `;
+    });
+
+    renderList(rows800, c800, (r,h)=>{
+      return `
+        <span class="entry-name">${r[h.indexOf("FirstName")]} ${r[h.indexOf("LastName")]}</span>
+        <span class="entry-score">${r[h.indexOf("Score")]}</span>
+      `;
+    });
+
+    requestAnimationFrame(() => {
+      document.getElementById("cat-300-dup").innerHTML = c300.innerHTML;
+      document.getElementById("cat-800-dup").innerHTML = c800.innerHTML;
+    });
+
+    const SPEED = 12;
+
+    startScroll("scroll-300", SPEED);
+    startScroll("scroll-800", SPEED);
+  });
+</script>
+
+</body>
+</html>
