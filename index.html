@@ -68,21 +68,24 @@
     width: 100%;
     position: relative;
     --scroll-height: 2000px;
+    --start-offset: 0px;
   }
 
+  /* ⭐ TIGHTER NAME/SCORE SPACING */
   .entry {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     padding: 6px 12px;
     font-size: 28px;
   }
 
   .entry-name {
+    flex: 0 0 65%;
     text-align: left;
-    flex: 1;
   }
 
   .entry-score {
+    flex: 0 0 35%;
     text-align: right;
     white-space: nowrap;
   }
@@ -260,7 +263,7 @@
       document.getElementById("cat-800-dup").innerHTML = c800.innerHTML;
     });
 
-    /* ⭐ Slightly faster scroll */
+    /* ⭐ DOUBLE SPEED */
     const SPEED = 32;
 
     startScroll("scroll-300", SPEED);
