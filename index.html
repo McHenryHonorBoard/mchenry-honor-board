@@ -53,9 +53,10 @@
     width: 100%;
   }
 
+  /* ⭐ Scroll starts at the VERY TOP now */
   .scroll-box {
     position: absolute;
-    top: 80px;
+    top: 0;
     bottom: 0;
     width: 100%;
     overflow: hidden;
@@ -66,6 +67,7 @@
     flex-direction: column;
     width: 100%;
     position: relative;
+    padding-top: 80px; /* replaces old top offset */
     --scroll-height: 2000px;
   }
 
@@ -98,21 +100,22 @@
     to   { transform: translateY(calc(-1 * var(--scroll-height))); }
   }
 
-  /* ⭐ STYLED BOTTOM BANNER */
+  /* ⭐ NEW PREMIUM BOTTOM BANNER */
   @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap');
 
   .footer-banner {
-    background: white;
+    background: linear-gradient(to bottom, #ffffff, #e8e8e8);
     color: black;
     text-align: center;
     font-family: 'Montserrat', sans-serif;
-    font-size: 34px;
+    font-size: 38px;
     font-weight: 900;
-    padding: 16px 0;
-    border-top: 6px solid #b30000;
-    letter-spacing: 1.5px;
+    padding: 20px 0;
+    border-top: 8px solid #b30000;
+    letter-spacing: 2px;
     text-transform: uppercase;
-    box-shadow: 0 -4px 12px rgba(0,0,0,0.4);
+    text-shadow: 0 2px 4px rgba(0,0,0,0.35);
+    box-shadow: 0 -4px 14px rgba(0,0,0,0.45);
   }
 </style>
 </head>
@@ -210,7 +213,7 @@
     setTimeout(() => {
       const height = content.scrollHeight;
 
-      const pcHeight = 900; 
+      const pcHeight = 900;
       const deviceHeight = window.innerHeight;
       const scale = pcHeight / deviceHeight;
 
@@ -252,7 +255,8 @@
       document.getElementById("cat-800-dup").innerHTML = c800.innerHTML;
     });
 
-    const SPEED = 12;
+    /* ⭐ Slightly faster scroll */
+    const SPEED = 14;
 
     startScroll("scroll-300", SPEED);
     startScroll("scroll-800", SPEED);
