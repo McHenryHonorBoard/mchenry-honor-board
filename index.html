@@ -53,11 +53,11 @@
     width: 100%;
   }
 
-  /* ⭐ SCROLL WINDOW FIX */
+  /* ⭐ SCROLL WINDOW */
   .scroll-box {
     position: absolute;
-    top: 80px;     /* directly below category title */
-    bottom: 0;     /* stops at top of footer banner */
+    top: 80px;     /* below category title */
+    bottom: 0;     /* above footer banner */
     width: 100%;
     overflow: hidden;
   }
@@ -95,7 +95,7 @@
   }
 
   @keyframes scroll-up {
-    from { transform: translateY(0); }
+    from { transform: translateY(var(--start-offset)); }
     to   { transform: translateY(calc(-1 * var(--scroll-height))); }
   }
 
@@ -205,12 +205,19 @@
     addSeparator(container);
   }
 
-  /* ⭐ FINAL SCROLL FIX */
+  /* ⭐ MID-SCREEN START + SPEED FIX */
   function startScroll(id, basePixelsPerSecond) {
     const content = document.getElementById(id);
+    const scrollBox = content.parentElement;
 
     setTimeout(() => {
       const height = content.scrollHeight;
+      const windowHeight = scrollBox.clientHeight;
+
+      const startOffset = windowHeight / 2;
+
+      content.style.setProperty('--scroll-height', `${height}px`);
+      content.style.setProperty('--start-offset', `${startOffset}px`);
 
       const pcHeight = 900;
       const deviceHeight = window.innerHeight;
@@ -218,7 +225,6 @@
 
       const duration = height / (basePixelsPerSecond * scale);
 
-      content.style.setProperty('--scroll-height', `${height}px`);
       content.style.animation = `scroll-up ${duration}s linear infinite`;
     }, 250);
   }
@@ -255,7 +261,7 @@
     });
 
     /* ⭐ Slightly faster scroll */
-    const SPEED = 14;
+    const SPEED = 16;
 
     startScroll("scroll-300", SPEED);
     startScroll("scroll-800", SPEED);
