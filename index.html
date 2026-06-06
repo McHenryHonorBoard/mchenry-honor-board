@@ -53,11 +53,11 @@
     width: 100%;
   }
 
-  /* ⭐ Scroll starts at the VERY TOP now */
+  /* ⭐ SCROLL WINDOW FIX */
   .scroll-box {
     position: absolute;
-    top: 0;
-    bottom: 0;
+    top: 80px;     /* directly below category title */
+    bottom: 0;     /* stops at top of footer banner */
     width: 100%;
     overflow: hidden;
   }
@@ -67,7 +67,6 @@
     flex-direction: column;
     width: 100%;
     position: relative;
-    padding-top: 80px; /* replaces old top offset */
     --scroll-height: 2000px;
   }
 
@@ -100,7 +99,7 @@
     to   { transform: translateY(calc(-1 * var(--scroll-height))); }
   }
 
-  /* ⭐ NEW PREMIUM BOTTOM BANNER */
+  /* ⭐ PREMIUM BOTTOM BANNER */
   @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap');
 
   .footer-banner {
