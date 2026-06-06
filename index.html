@@ -41,20 +41,20 @@
     overflow: hidden;
   }
 
-  /* ⭐ Responsive category title */
+  /* ⭐ Category title restored to fixed size */
   .category-title {
-    font-size: 3vw;
+    font-size: 36px;
     font-weight: 900;
     text-align: center;
     background: #b30000;
-    padding: 1vw 0;
+    padding: 14px 0;
     border-radius: 6px;
     color: white;
     box-shadow: 0 0 12px rgba(0,0,0,0.6);
     width: 100%;
   }
 
-  /* ⭐ SCROLL WINDOW */
+  /* ⭐ Scroll window */
   .scroll-box {
     position: absolute;
     top: 80px;
@@ -73,12 +73,12 @@
     --start-offset: 0px;
   }
 
-  /* ⭐ GUARANTEED 65/35 SPACING USING GRID */
+  /* ⭐ Guaranteed 65/35 spacing using grid */
   .entry {
     display: grid;
     grid-template-columns: 65% 35%;
     padding: 0.4vw 1vw;
-    font-size: 2.2vw; /* responsive */
+    font-size: 2.2vw; /* responsive names */
     align-items: center;
   }
 
@@ -103,7 +103,7 @@
     to   { transform: translateY(calc(-1 * var(--scroll-height))); }
   }
 
-  /* ⭐ PREMIUM RESPONSIVE BOTTOM BANNER */
+  /* ⭐ Banner restored to fixed size */
   @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap');
 
   .footer-banner {
@@ -111,14 +111,14 @@
     color: black;
     text-align: center;
     font-family: 'Montserrat', sans-serif;
-    font-size: 3.2vw;
+    font-size: 34px; /* restored */
     font-weight: 900;
-    padding: 1.5vw 0;
-    border-top: 0.6vw solid #b30000;
-    letter-spacing: 0.2vw;
+    padding: 20px 0;
+    border-top: 8px solid #b30000;
+    letter-spacing: 2px;
     text-transform: uppercase;
-    text-shadow: 0 0.2vw 0.4vw rgba(0,0,0,0.35);
-    box-shadow: 0 -0.4vw 1vw rgba(0,0,0,0.45);
+    text-shadow: 0 2px 4px rgba(0,0,0,0.35);
+    box-shadow: 0 -4px 14px rgba(0,0,0,0.45);
   }
 </style>
 </head>
@@ -205,7 +205,7 @@
     addSeparator(container);
   }
 
-  /* ⭐ MID-SCREEN START + NO FLICKER + SPEED FIX */
+  /* ⭐ Mid-screen start + no flicker + speed fix */
   function startScroll(id, basePixelsPerSecond) {
     const content = document.getElementById(id);
     const scrollBox = content.parentElement;
@@ -227,8 +227,7 @@
 
       content.style.animation = `scroll-up ${duration}s linear infinite`;
 
-      /* ⭐ Fade in AFTER offset is applied */
-      content.style.opacity = 1;
+      content.style.opacity = 1; // fade in after offset applied
 
     }, 250);
   }
